@@ -159,15 +159,7 @@
     .note-lbl { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
     .note-text { font-size: 13px; font-style: italic; color: var(--text-mid); line-height: 1.65; }
 
-    /* ── LEGEND ── */
-    #legend {
-      position: fixed; top: 72px; left: 14px; z-index: 200;
-      background: rgba(14,20,40,0.90); backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.10); border-radius: 8px; padding: 12px 14px;
-    }
-    .leg-title { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.38); margin-bottom: 9px; }
-    .leg-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
-    .leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    /* legend removed */
 
     /* ── REGION NAV ── */
     #region-nav {
@@ -212,7 +204,6 @@
       #panel.open { bottom: 0; }
       #region-nav { bottom: 10px; max-width: calc(100vw - 28px); overflow-x: auto; justify-content: flex-start; border-radius: 12px; }
       #region-nav.panel-open { opacity: 0; pointer-events: none; }
-      #legend { display: none; }
       .carousel { height: 200px; }
       .header-hint { display: none; }
     }
@@ -229,15 +220,7 @@
   <span class="header-hint">Select a region to explore</span>
 </header>
 
-<!-- ═══════ LEGEND ═══════ -->
-<div id="legend">
-  <div class="leg-title">Industries</div>
-  <div class="leg-item"><span class="leg-dot" style="background:#E57200"></span>Defense &amp; Maritime</div>
-  <div class="leg-item"><span class="leg-dot" style="background:#5E7FA6"></span>Technology</div>
-  <div class="leg-item"><span class="leg-dot" style="background:#4A7C59"></span>Agriculture &amp; Tourism</div>
-  <div class="leg-item"><span class="leg-dot" style="background:#8E6B9E"></span>Knowledge Economy</div>
-  <div class="leg-item"><span class="leg-dot" style="background:#F4A245"></span>Energy &amp; Transition</div>
-</div>
+<!-- legend removed -->
 
 <!-- ═══════ MAP ═══════ -->
 <div id="map"></div>
@@ -378,38 +361,16 @@ const REGION_FIPS = {
     "51760", // ... skip (already in SW)
   ]),
 
-  // ── Northern Virginia: tech corridor + DC suburbs
+  // ── Northern Virginia: Fairfax, Loudoun, Arlington, Alexandria, Prince William only
   "nova": new Set([
     "51059", // Fairfax County
-    "51013", // Arlington
-    "51107", // Loudoun
-    "51153", // Prince William
-    "51179", // Stafford
-    "51177", // Spotsylvania
-    "51099", // King George
-    "51061", // Fauquier
-    "51036", // Charles City — no, wrong region; remove
+    "51107", // Loudoun County
+    "51013", // Arlington County
+    "51153", // Prince William County
     "51510", // Alexandria City
-    "51610", // Falls Church City
+    "51610", // Falls Church City (within Fairfax boundary)
     "51683", // Manassas City
     "51685", // Manassas Park City
-    "51630", // Fredericksburg City
-    "51193", // Westmoreland
-    "51097", // King and Queen
-    "51101", // King William
-    "51127", // New Kent
-    "51087", // Henrico
-    "51041", // Chesterfield
-    "51085", // Hanover
-    "51760", // Richmond City (51760)
-    "51730", // Petersburg City
-    "51570", // Colonial Heights
-    "51149", // Prince George
-    "51036", // Charles City
-    "51053", // Dinwiddie
-    "51183", // Sussex
-    // Note: Richmond metro added to NoVA region for simplicity;
-    // you can move these to their own region later
   ]),
 };
 
@@ -461,10 +422,14 @@ const LOCATIONS = [
     lat: 36.90, lng: -82.30,
     industry: "Energy & Transition",
     color: "#F4A245",
-    photos: [null, null, null],
-    paragraph1: "Southwest Virginia is the Appalachian heartland of Virginia. Coal mining is a prominent industry here, generating $1.7B in annual GDP. The region's access to nature generates $1.4B in annual tourist spend for hiking, crycling, camping, and fishing. ",
-    paragraph2: "The region is home to Mt. Rogers, Virginia's highest peak at 5,729.",
-    spotlight: {"The state government is pushing an initiative to deploy small-modular nuclear reactors in the region to meet growing energy demands.", url: "#" },
+    photos: ["photos/Mt_Rogers.jpeg", null, null],
+    paragraph1: "Southwest Virginia is the Appalachian heartland of Virginia. Coal mining is a prominent industry here, generating $1.7B in annual GDP. The region's access to nature generates $1.4B in annual tourist spend for hiking, cycling, camping, and fishing.",
+    paragraph2: "The region is home to Mt. Rogers, Virginia's highest peak at 5,729 feet. The state government is also pushing an initiative to deploy small-modular nuclear reactors in the region to meet growing energy demands and diversify an economy long dependent on coal.",
+    spotlight: {
+      name: "Small Modular Nuclear Reactors",
+      desc: "The state government is pushing an initiative to deploy small-modular nuclear reactors in the region to meet growing energy demands and reduce dependence on coal.",
+      url: "#"
+    },
     note: ""
   },
   {
@@ -474,10 +439,13 @@ const LOCATIONS = [
     lat: 36.85, lng: -76.29,
     industry: "Defense & Maritime",
     color: "#E57200",
-    photos: [null, null, null],
-    paragraph1: "Hampton Roads is integral to American naval power. Home to Naval Station Norfolk, the world's largest naval base, and Newport News Shipbuilding, the region builds, repairs, and deploys the warships that project U.S. power globally. The Port of Virginia ranks among the East Coast's busiest commercial ports, and the defense ecosystem supports hundreds of thousands of civilian jobs across Virginia Beach, Chesapeake, Hampton, and Norfolk.",
+    photos: ["photos/Surf_1.jpeg", "photos/Surf_2.jpeg", null], Home to Naval Station Norfolk, the world's largest naval base, and Newport News Shipbuilding, the region builds, repairs, and deploys the warships that project U.S. power globally. The Port of Virginia ranks among the East Coast's busiest commercial ports, and the defense ecosystem supports hundreds of thousands of civilian jobs across Virginia Beach, Chesapeake, Hampton, and Norfolk.",
     paragraph2: "[ Paragraph 2 — Your visit or plans. Nauticus and the USS Wisconsin museum ship, the Norfolk waterfront, the contrast between the military footprint and the city's arts and restaurant scene. What it means that a single region produces this much of America's sea power. ~4–5 sentences. ]",
-    spotlight: { name: "[ Virginia Beach is home to the new Atlantic Park Surf, a mixed-use development that includes one of two surfing wave pools on the East Coast. Home to different retail stores, restaurants, and residential apartments.]", url: "#" },
+    spotlight: {
+      name: "Atlantic Park Surf",
+      desc: "Virginia Beach is home to Atlantic Park Surf, a mixed-use development that includes one of two surfing wave pools on the East Coast, alongside retail stores, restaurants, and residential apartments.",
+      url: "#"
+    },
     note: "[ Your personal note about Hampton Roads. ]"
   },
   {
@@ -487,10 +455,13 @@ const LOCATIONS = [
     lat: 38.65, lng: -78.85,
     industry: "Agriculture & Tourism",
     color: "#4A7C59",
-    photos: [null, null, null],
-    paragraph1: "Sandwiched between the Blue Ridge and the Allegheny mountains, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry — Virginia now has over 300 wineries, with many concentrated along the Shenandoah Valley Wine Trail. The region's natural assets — Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive — drive a growing outdoor tourism economy.",
+    photos: ["photos/Shenandoah.jpeg", "photos/Rockingham.jpeg", null],, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry — Virginia now has over 300 wineries, with many concentrated along the Shenandoah Valley Wine Trail. The region's natural assets — Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive — drive a growing outdoor tourism economy.",
     paragraph2: "[ Paragraph 2 — Your personal visit. A winery you went to, a hike on Skyline Drive, a stop in Staunton or Harrisonburg. The contrast between the Valley's rural character and its proximity to DC and NoVA. ~4–5 sentences. ]",
-    spotlight: { name: "Buc-ees", url: "#" },
+    spotlight: {
+      name: "Buc-ee's",
+      desc: "The iconic Texas-born travel center has planted its flag in the Shenandoah Valley, bringing its famously massive rest stops, fresh food, and devoted following to I-81 travelers.",
+      url: "#"
+    },
     note: "[ Your personal note about the Valley. ]"
   },
   {
@@ -500,10 +471,14 @@ const LOCATIONS = [
     lat: 38.03, lng: -78.48,
     industry: "Knowledge Economy",
     color: "#8E6B9E",
-    photos: [null, null, null],
-    paragraph1: "The Virginia Piedmont is the rolling foothills country stretching from the Blue Ridge Mountains toward Richmond, dotted with working farms, historic estates, and what has quietly become one of America's most celebrated wine destinations. Virginia now has over 300 wineries contributing $1.7 billion in direct economic impact and 10,000 full-time jobs statewide. Anchoring the region, UVA generates $11.9 billion in total statewide economic impact and supports tens of thousands of jobs. The UVA Health System, also serves as the primary academic medical center for a broad swath of rural central and western Virginia with no comparable alternative within a hundred miles.",
-    paragraph2: "[ Paragraph 2 — Your two years living here. What surprised you about Cville beyond the Grounds bubble. Favorite spots, road trips, what the city taught you about Virginia. The tension between its progressive university culture and its deeper rural roots. ~4–5 sentences. ]",
-    spotlight: { name: "Early Mountain Winery, their Peite Mensang is award-winning", url: "#" },
+    photos: ["photos/Rotunda.jpeg", "photos/Hazy.jpeg", null],
+    paragraph1: "The Virginia Piedmont is the rolling foothills country stretching from the Blue Ridge Mountains toward Richmond, dotted with working farms, historic estates, and what has quietly become one of America's most celebrated wine destinations. Virginia now has over 300 wineries contributing $1.7 billion in direct economic impact and 10,000 full-time jobs statewide. Anchoring the region, UVA generates $11.9 billion in total statewide economic impact and supports tens of thousands of jobs. The UVA Health System also serves as the primary academic medical center for a broad swath of rural central and western Virginia with no comparable alternative within a hundred miles.",
+    paragraph2: "The Piedmont is also where the Civil War effectively ended — Appomattox Court House, where Lee surrendered to Grant in April 1865, sits just east of Lynchburg, a quiet historic site that belies its significance. [ Add your personal angle: two years living in Cville, favorite spots on the Downtown Mall, a vineyard you love, what the city taught you about Virginia. ~3–4 sentences. ]",
+    spotlight: {
+      name: "Early Mountain Vineyards",
+      desc: "One of the Piedmont's premier wineries, Early Mountain is known for its award-winning Petit Manseng and stunning Blue Ridge views. A benchmark for Virginia's emerging wine identity.",
+      url: "#"
+    },
     note: "Check out the UVA Aboriginal Art Musuem in Pantops. Home to the world's largest gallery of Australian aboriginal art outside of Australia."
   },
   {
@@ -513,10 +488,14 @@ const LOCATIONS = [
     lat: 38.88, lng: -77.18,
     industry: "Technology & Defense",
     color: "#5E7FA6",
-    photos: [null, null, null],
-    paragraph1: "Northern Virginia is the engine room of Virginia's economy — and increasingly of the American technology sector. Amazon HQ2 in Arlington, the world's largest concentration of data centers in Loudoun County, and a defense contracting ecosystem stretching from the Pentagon to Fort Belvoir have made the region one of the most economically powerful in the country. Fairfax County alone has a GDP comparable to many mid-sized nations, anchored by federal contracting, cybersecurity firms, and professional services.",
-    paragraph2: "[ Paragraph 2 — Your personal connection. You're about to move to DC and will be in this orbit every day. The diversity of the region, the immigrant entrepreneurship story, the contrast with every other region on this map. What does NoVA's dominance mean for the rest of Virginia? ~4–5 sentences. ]",
-    spotlight: { name: "[ Local Business or Org — Northern Virginia ]", desc: "[ A govtech company, civic tech org, local restaurant, or community org that captures the region. ]", url: "#" },
+    photos: ["photos/Tysons.jpeg", "photos/Great_Falls.jpeg", null],
+    paragraph1: "Northern Virginia is Virginia's economic engine, generating nearly half the state's GDP from a geography that represents a fraction of its land area. Loudoun County alone hosts over 300 data centers — the highest concentration on earth — carrying an estimated 70% of the world's internet traffic nightly. The region is home to more than a dozen Fortune 500 companies including Amazon, Booz Allen Hamilton, General Dynamics, and Leidos, anchored by a federal contracting and cybersecurity ecosystem that stretches from the Pentagon to Fort Belvoir.",
+    paragraph2: "The region's history runs as deep as its economy. Manassas National Battlefield Park — site of two pivotal Civil War engagements — sits just miles from where Amazon's HQ2 now rises in Arlington, a collision of American eras that captures NoVA's character better than any statistic. [ Add your personal angle: moving to DC, what draws you to this orbit, the diversity of Fairfax County, what NoVA's dominance means for the rest of Virginia. ~2–3 sentences. ]",
+    spotlight: {
+      name: "[ Local Business or Org — Northern Virginia ]",
+      desc: "[ A govtech company, civic tech org, local restaurant in Arlington or Tysons, or a community org that captures the region. ]",
+      url: "#"
+    },
     note: "[ Your personal note — you're starting the next chapter here. ]"
   }
 ];
