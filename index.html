@@ -159,8 +159,6 @@
     .note-lbl { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
     .note-text { font-size: 13px; font-style: italic; color: var(--text-mid); line-height: 1.65; }
 
-    /* legend removed */
-
     /* ── REGION NAV ── */
     #region-nav {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -220,8 +218,6 @@
   <span class="header-hint">Select a region to explore</span>
 </header>
 
-<!-- legend removed -->
-
 <!-- ═══════ MAP ═══════ -->
 <div id="map"></div>
 
@@ -252,12 +248,9 @@
 
 // ════════════════════════════════════════════════════════════
 //  REGION → COUNTY FIPS MAPPING
-//  FIPS codes are 5-digit strings: "51" + 3-digit county code
-//  Virginia independent cities count as county-equivalents
 // ════════════════════════════════════════════════════════════
 const REGION_FIPS = {
 
-  // ── SW Virginia: Appalachian coalfields + mountain counties
   "sw-virginia": new Set([
     "51105", // Lee
     "51169", // Scott
@@ -279,19 +272,16 @@ const REGION_FIPS = {
     "51045", // Craig
     "51089", // Henry
     "51121", // Montgomery
-    // Independent cities
-    "51720", // Norton
-    "51520", // Bristol
-    "51640", // Galax
-    "51690", // Martinsville
-    "51750", // Radford
-    "51770", // Roanoke City
-    "51775", // Salem
-    "51760", // Roanoke County (51161) — city only above; county below
     "51161", // Roanoke County
+    "51720", // Norton City
+    "51520", // Bristol City
+    "51640", // Galax City
+    "51690", // Martinsville City
+    "51750", // Radford City
+    "51770", // Roanoke City
+    "51775", // Salem City
   ]),
 
-  // ── Hampton Roads: naval/port/maritime metro
   "hampton-roads": new Set([
     "51810", // Virginia Beach
     "51710", // Norfolk
@@ -310,10 +300,8 @@ const REGION_FIPS = {
     "51620", // Franklin City
     "51073", // Gloucester
     "51115", // Mathews
-    "51083", // Halifax — actually this is more SW; keep for now
   ]),
 
-  // ── Shenandoah Valley: Valley of Virginia
   "shenandoah": new Set([
     "51015", // Augusta
     "51165", // Rockingham
@@ -334,7 +322,6 @@ const REGION_FIPS = {
     "51530", // Buena Vista City
   ]),
 
-  // ── Charlottesville & Piedmont: knowledge economy + wine country
   "charlottesville": new Set([
     "51003", // Albemarle
     "51125", // Nelson
@@ -353,22 +340,18 @@ const REGION_FIPS = {
     "51515", // Bedford City
     "51011", // Appomattox
     "51147", // Prince Edward
-    "51117", // Mecklenburg (border)
-    "51057", // Essex
-    "51033", // Caroline (partial — split w/ NoVA below)
     "51540", // Charlottesville City
     "51680", // Lynchburg City
-    "51760", // ... skip (already in SW)
   ]),
 
-  // ── Northern Virginia: Fairfax, Loudoun, Arlington, Alexandria, Prince William only
+  // NoVA: Fairfax, Loudoun, Arlington, Prince William, Alexandria only
   "nova": new Set([
     "51059", // Fairfax County
     "51107", // Loudoun County
     "51013", // Arlington County
     "51153", // Prince William County
     "51510", // Alexandria City
-    "51610", // Falls Church City (within Fairfax boundary)
+    "51610", // Falls Church City
     "51683", // Manassas City
     "51685", // Manassas Park City
   ]),
@@ -376,7 +359,7 @@ const REGION_FIPS = {
 
 
 // ════════════════════════════════════════════════════════════
-//  INLINE VIRGINIA OUTLINE (immediate fallback before async data loads)
+//  INLINE VIRGINIA OUTLINE — instant fallback while counties load
 // ════════════════════════════════════════════════════════════
 const VA_OUTLINE = {
   type: "Feature", properties: {},
@@ -412,7 +395,9 @@ const VA_OUTLINE = {
 
 
 // ════════════════════════════════════════════════════════════
-//  LOCATION DATA — replace placeholders with your content
+//  LOCATION DATA
+//  photos[] — paths relative to index.html e.g. "photos/My_Photo.jpeg"
+//  Set to null to show a placeholder tile instead
 // ════════════════════════════════════════════════════════════
 const LOCATIONS = [
   {
@@ -427,11 +412,12 @@ const LOCATIONS = [
     paragraph2: "The region is home to Mt. Rogers, Virginia's highest peak at 5,729 feet. The state government is also pushing an initiative to deploy small-modular nuclear reactors in the region to meet growing energy demands and diversify an economy long dependent on coal.",
     spotlight: {
       name: "Small Modular Nuclear Reactors",
-      desc: "The state government is pushing an initiative to deploy small-modular nuclear reactors in the region to meet growing energy demands and reduce dependence on coal.",
+      desc: "Virginia is exploring deployment of small-modular nuclear reactors in Southwest Virginia to meet growing energy demands and reduce dependence on coal, potentially anchoring the region's next economic chapter.",
       url: "#"
     },
-    note: ""
+    note: "[ Your personal note — a memory, a quote, a single observation. 1–2 sentences. ]"
   },
+
   {
     id: "hampton-roads",
     name: "Hampton Roads",
@@ -439,7 +425,8 @@ const LOCATIONS = [
     lat: 36.85, lng: -76.29,
     industry: "Defense & Maritime",
     color: "#E57200",
-    photos: ["photos/Surf_1.jpeg", "photos/Surf_2.jpeg", null], Home to Naval Station Norfolk, the world's largest naval base, and Newport News Shipbuilding, the region builds, repairs, and deploys the warships that project U.S. power globally. The Port of Virginia ranks among the East Coast's busiest commercial ports, and the defense ecosystem supports hundreds of thousands of civilian jobs across Virginia Beach, Chesapeake, Hampton, and Norfolk.",
+    photos: ["photos/Surf_1.jpeg", "photos/Surf_2.jpeg", null],
+    paragraph1: "Hampton Roads is integral to American naval power. Home to Naval Station Norfolk, the world's largest naval base, and Newport News Shipbuilding, the region builds, repairs, and deploys the warships that project U.S. power globally. The Port of Virginia ranks among the East Coast's busiest commercial ports, and the defense ecosystem supports hundreds of thousands of civilian jobs across Virginia Beach, Chesapeake, Hampton, and Norfolk.",
     paragraph2: "[ Paragraph 2 — Your visit or plans. Nauticus and the USS Wisconsin museum ship, the Norfolk waterfront, the contrast between the military footprint and the city's arts and restaurant scene. What it means that a single region produces this much of America's sea power. ~4–5 sentences. ]",
     spotlight: {
       name: "Atlantic Park Surf",
@@ -448,6 +435,7 @@ const LOCATIONS = [
     },
     note: "[ Your personal note about Hampton Roads. ]"
   },
+
   {
     id: "shenandoah",
     name: "Shenandoah Valley",
@@ -455,7 +443,8 @@ const LOCATIONS = [
     lat: 38.65, lng: -78.85,
     industry: "Agriculture & Tourism",
     color: "#4A7C59",
-    photos: ["photos/Shenandoah.jpeg", "photos/Rockingham.jpeg", null],, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry — Virginia now has over 300 wineries, with many concentrated along the Shenandoah Valley Wine Trail. The region's natural assets — Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive — drive a growing outdoor tourism economy.",
+    photos: ["photos/Shenandoah.jpeg", "photos/Rockingham.jpeg", null],
+    paragraph1: "Sandwiched between the Blue Ridge and the Allegheny mountains, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry — Virginia now has over 300 wineries, with many concentrated along the Shenandoah Valley Wine Trail. The region's natural assets — Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive — drive a growing outdoor tourism economy.",
     paragraph2: "[ Paragraph 2 — Your personal visit. A winery you went to, a hike on Skyline Drive, a stop in Staunton or Harrisonburg. The contrast between the Valley's rural character and its proximity to DC and NoVA. ~4–5 sentences. ]",
     spotlight: {
       name: "Buc-ee's",
@@ -464,6 +453,7 @@ const LOCATIONS = [
     },
     note: "[ Your personal note about the Valley. ]"
   },
+
   {
     id: "charlottesville",
     name: "Piedmont",
@@ -473,14 +463,15 @@ const LOCATIONS = [
     color: "#8E6B9E",
     photos: ["photos/Rotunda.jpeg", "photos/Hazy.jpeg", null],
     paragraph1: "The Virginia Piedmont is the rolling foothills country stretching from the Blue Ridge Mountains toward Richmond, dotted with working farms, historic estates, and what has quietly become one of America's most celebrated wine destinations. Virginia now has over 300 wineries contributing $1.7 billion in direct economic impact and 10,000 full-time jobs statewide. Anchoring the region, UVA generates $11.9 billion in total statewide economic impact and supports tens of thousands of jobs. The UVA Health System also serves as the primary academic medical center for a broad swath of rural central and western Virginia with no comparable alternative within a hundred miles.",
-    paragraph2: "The Piedmont is also where the Civil War effectively ended — Appomattox Court House, where Lee surrendered to Grant in April 1865, sits just east of Lynchburg, a quiet historic site that belies its significance. [ Add your personal angle: two years living in Cville, favorite spots on the Downtown Mall, a vineyard you love, what the city taught you about Virginia. ~3–4 sentences. ]",
+    paragraph2: "The Piedmont is also where the Civil War effectively ended — Appomattox Court House, where Lee surrendered to Grant in April 1865, sits just east of Lynchburg, a quiet historic site that belies its enormous significance. [ Add your personal angle: two years living in Cville, favorite spots on the Downtown Mall, a vineyard you love, what the city taught you about Virginia. ~3–4 sentences. ]",
     spotlight: {
       name: "Early Mountain Vineyards",
-      desc: "One of the Piedmont's premier wineries, Early Mountain is known for its award-winning Petit Manseng and stunning Blue Ridge views. A benchmark for Virginia's emerging wine identity.",
+      desc: "One of the Piedmont's premier wineries, Early Mountain is known for its award-winning Petit Manseng and stunning Blue Ridge views — a benchmark for Virginia's emerging wine identity.",
       url: "#"
     },
-    note: "Check out the UVA Aboriginal Art Musuem in Pantops. Home to the world's largest gallery of Australian aboriginal art outside of Australia."
+    note: "Check out the UVA Kluge-Ruhe Aboriginal Art Museum in Pantops — home to the world's largest gallery of Australian Aboriginal art outside of Australia."
   },
+
   {
     id: "nova",
     name: "Northern Virginia",
@@ -500,7 +491,7 @@ const LOCATIONS = [
   }
 ];
 
-// Lookup map: fips → location object
+// Build FIPS lookup
 const FIPS_TO_LOC = {};
 LOCATIONS.forEach(loc => {
   REGION_FIPS[loc.id].forEach(fips => { FIPS_TO_LOC[fips] = loc; });
@@ -512,7 +503,6 @@ LOCATIONS.forEach(loc => {
 // ════════════════════════════════════════════════════════════
 const map = L.map('map', { center: [37.8, -79.2], zoom: 7, zoomControl: false });
 
-// Instant fallback outline while counties load
 const outlineLayer = L.geoJSON(VA_OUTLINE, {
   style: {
     color: 'rgba(245,240,230,0.30)', weight: 1,
@@ -524,23 +514,17 @@ L.control.zoom({ position: 'topright' }).addTo(map);
 
 
 // ════════════════════════════════════════════════════════════
-//  COUNTY LAYER — loaded async from us-atlas on jsdelivr
-//  Works on GitHub Pages and any real browser.
-//  Falls back gracefully to state outline if fetch fails.
+//  COUNTY LAYER — fetched from us-atlas (works on GitHub Pages)
 // ════════════════════════════════════════════════════════════
 let countyLayer = null;
 
 fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json')
   .then(r => r.json())
   .then(us => {
-    // Decode TopoJSON → GeoJSON
     const allCounties = topojson.feature(us, us.objects.counties);
-
-    // Filter to Virginia only (FIPS starts with "51")
-    const vaFeatures = allCounties.features.filter(f => {
-      const id = String(f.id).padStart(5, '0');
-      return id.startsWith('51');
-    });
+    const vaFeatures  = allCounties.features.filter(f =>
+      String(f.id).padStart(5, '0').startsWith('51')
+    );
 
     countyLayer = L.geoJSON(
       { type: "FeatureCollection", features: vaFeatures },
@@ -549,39 +533,20 @@ fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json')
           const fips = String(feature.id).padStart(5, '0');
           const loc  = FIPS_TO_LOC[fips];
           if (loc) {
-            return {
-              color:       loc.color,
-              weight:      1.2,
-              opacity:     0.75,
-              fillColor:   loc.color,
-              fillOpacity: 0.18,
-            };
+            return { color: loc.color, weight: 1.2, opacity: 0.75, fillColor: loc.color, fillOpacity: 0.18 };
           }
-          // Unassigned Virginia counties — subtle outline only
-          return {
-            color:       'rgba(245,240,230,0.20)',
-            weight:      0.5,
-            fillColor:   'transparent',
-            fillOpacity: 0,
-          };
+          return { color: 'rgba(245,240,230,0.20)', weight: 0.5, fillColor: 'transparent', fillOpacity: 0 };
         },
-
         onEachFeature: (feature, layer) => {
           const fips = String(feature.id).padStart(5, '0');
           const loc  = FIPS_TO_LOC[fips];
           if (!loc) return;
-
           layer.on({
             mouseover(e) {
-              e.target.setStyle({
-                fillOpacity: 0.32,
-                weight: 1.8,
-                opacity: 1,
-              });
+              e.target.setStyle({ fillOpacity: 0.35, weight: 1.8, opacity: 1 });
               e.target.bringToFront();
             },
             mouseout(e) {
-              // Don't reset if this region's panel is open
               if (activeLoc && activeLoc.id === loc.id) return;
               countyLayer.resetStyle(e.target);
             },
@@ -591,12 +556,10 @@ fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json')
       }
     ).addTo(map);
 
-    // Remove plain outline now that counties are drawn
     map.removeLayer(outlineLayer);
   })
   .catch(() => {
-    // Fetch failed — plain outline stays visible as fallback
-    console.warn('County data unavailable; showing state outline.');
+    console.warn('County data unavailable — showing state outline fallback.');
   });
 
 
@@ -637,7 +600,7 @@ LOCATIONS.forEach(loc => {
 const navEl = document.getElementById('region-nav');
 const SHORT = {
   "sw-virginia": "SW Virginia", "hampton-roads": "Hampton Roads",
-  "shenandoah": "Shenandoah", "charlottesville": "Charlottesville", "nova": "NoVA"
+  "shenandoah": "Shenandoah", "charlottesville": "Piedmont", "nova": "NoVA"
 };
 
 LOCATIONS.forEach(loc => {
@@ -659,7 +622,7 @@ function highlightRegion(locId) {
     const loc  = FIPS_TO_LOC[fips];
     if (!loc) return;
     if (loc.id === locId) {
-      layer.setStyle({ fillOpacity: 0.32, weight: 1.8, opacity: 1 });
+      layer.setStyle({ fillOpacity: 0.35, weight: 1.8, opacity: 1 });
       layer.bringToFront();
     } else {
       countyLayer.resetStyle(layer);
@@ -718,7 +681,6 @@ function closePanel() {
   document.getElementById('map').classList.remove('panel-open');
   document.getElementById('region-nav').classList.remove('panel-open');
   document.querySelectorAll('.rpill').forEach(p => p.classList.remove('active'));
-
   if (activeLoc) {
     markerMap[activeLoc.id].setIcon(markerIcon(activeLoc.color, false));
     activeLoc = null;
@@ -741,7 +703,7 @@ function buildCarousel(photos, name) {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
     if (photo) {
-      slide.innerHTML = `<img src="${photo}" alt="${name} — photo ${i+1}" loading="lazy">`;
+      slide.innerHTML = `<img src="${photo}" alt="${name} photo ${i+1}" loading="lazy">`;
     } else {
       slide.innerHTML = `<div class="ph">
         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
