@@ -406,7 +406,7 @@ const LOCATIONS = [
     id:"sw-virginia", name:"Southwest Virginia",
     regionTag:"Blue Ridge Highlands & Heart of Appalachia",
     lat:36.90, lng:-82.30, industry:"Energy & Transition",
-    photos:["Mt_Rogers.jpeg"],
+    photos:["Mt_Rogers.jpeg", null, null],
     paragraph1:"Southwest Virginia is the Appalachian heartland of Virginia. Coal mining is a prominent industry here, generating $1.7B in annual GDP. The region's access to nature generates $1.4B in annual tourist spend for hiking, cycling, camping, and fishing.",
     paragraph2:"Virginia is exploring the deployment of small-modular nuclear reactors in Southwest Virginia to meet growing energy demands and reduce dependence on coal, potentially anchoring the region's next economic chapter.",
     spotlight:{
@@ -419,7 +419,7 @@ const LOCATIONS = [
     id:"hampton-roads", name:"Hampton Roads",
     regionTag:"Coastal Virginia",
     lat:36.85, lng:-76.29, industry:"Defense & Maritime",
-    photos:["Surf_1.jpeg","Surf_2.jpeg"],
+    photos:["Surf_1.jpeg","Surf_2.jpeg",null],
     paragraph1:"Hampton Roads is integral to American naval power. Home to Naval Station Norfolk, the world's largest naval base, and Newport News Shipbuilding, the region builds, repairs, and deploys the warships that project U.S. power globally. The Port of Virginia ranks among the East Coast's busiest commercial ports, and the defense ecosystem supports hundreds of thousands of civilian jobs across Virginia Beach, Chesapeake, Hampton, and Norfolk.",
     paragraph2:"",
     spotlight:{
@@ -432,8 +432,8 @@ const LOCATIONS = [
     id:"shenandoah", name:"Shenandoah Valley",
     regionTag:"Shenandoah Valley",
     lat:38.65, lng:-78.85, industry:"Agriculture & Tourism",
-    photos:["Shenandoah.jpeg","Rockingham.jpeg"],
-    paragraph1:"Sandwiched between the Blue Ridge and the Allegheny mountains, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry, Virginia now has over 300 wineries. The region's natural attractions: Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive drive a booming outdoor tourism economy.",
+    photos:["Shenandoah.jpeg","Rockingham.jpeg",null],
+    paragraph1:"Sandwiched between the Blue Ridge and the Allegheny mountains, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry — Virginia now has over 300 wineries, with many concentrated along the Shenandoah Valley Wine Trail. The region's natural assets — Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive — drive a growing outdoor tourism economy.",
     paragraph2:"",
     spotlight:{
       name:"Buc-ee's",
@@ -445,9 +445,9 @@ const LOCATIONS = [
     id:"central-virginia", name:"Central Virginia",
     regionTag:"Central Virginia",
     lat:38.03, lng:-78.48, industry:"Knowledge Economy",
-    photos:["Rotunda.jpeg","Hazy.jpeg"],
+    photos:["Rotunda.jpeg","Hazy.jpeg",null],
     paragraph1:"The Virginia Piedmont is rolling foothills country stretching from the Blue Ridge Mountains toward Richmond, dotted with working farms, historic estates, and what has quietly become one of America's most celebrated wine destinations. Virginia now has over 300 wineries contributing $1.7 billion in direct economic impact and 10,000 full-time jobs statewide. Anchoring the region, UVA generates $11.9 billion in total statewide economic impact and supports tens of thousands of jobs.",
-    paragraph2:"The region is also where the Civil War effectively ended, Appomattox Court House, where Robert E. Lee surrendered to Ulysses S. Grant in April 1865, sits just east of Lynchburg.",
+    paragraph2:"The region is also where the Civil War effectively ended, Appomattox Court House, where Robert E. Lee surrendered to Ulysses S. Grant in April 1865, sits just east of Lynchburg, a quiet historic site that belies its enormous significance.",
     spotlight:{
       name: "Early Mountain Vineyard",
       desc:"One of the Piedmont's premier wineries, Early Mountain is known for its award-winning Petit Manseng, a benchmark for Virginia's emerging wine identity.",
@@ -458,9 +458,9 @@ const LOCATIONS = [
     id:"nova", name:"Northern Virginia",
     regionTag:"Northern Virginia",
     lat:38.88, lng:-77.18, industry:"Technology & Defense",
-    photos:["Tysons.jpeg","Great_Falls.jpeg"],
-    paragraph1:"Northern Virginia is Virginia's economic engine, generating nearly half the state's GDP from a geography that represents a fraction of its land area. Loudoun County alone hosts over 300 data centers, the highest concentration on earth, carrying an estimated 70% of the world's internet traffic nightly. The region is home to more than a dozen Fortune 500 companies including Amazon, Booz Allen Hamilton, General Dynamics, and Leidos.",
-    paragraph2:"The region's history runs as deep as its economy. Manassas National Battlefield Park, site of two pivotal Civil War engagements, is just miles from where Amazon's HQ2.",
+    photos:["Tysons.jpeg","Great_Falls.jpeg",null],
+    paragraph1:"Northern Virginia is Virginia's economic engine, generating nearly half the state's GDP from a geography that represents a fraction of its land area. Loudoun County alone hosts over 300 data centers — the highest concentration on earth — carrying an estimated 70% of the world's internet traffic nightly. The region is home to more than a dozen Fortune 500 companies including Amazon, Booz Allen Hamilton, General Dynamics, and Leidos, anchored by a federal contracting and cybersecurity ecosystem that stretches from the Pentagon to Fort Belvoir.",
+    paragraph2:"The region's history runs as deep as its economy. Manassas National Battlefield Park — site of two pivotal Civil War engagements — sits just miles from where Amazon's HQ2 now rises in Arlington, a striking collision of American eras that captures NoVA's character better than any statistic. [ Add your personal angle: moving to DC, what draws you to this orbit, the diversity of Fairfax County, what NoVA's dominance means for the rest of Virginia. ~2-3 sentences. ]",
     spotlight:{
       name:"Great Falls Park",
       desc:"A scenic park and trail that overlooks the Potomac River and Maryland.",
@@ -652,35 +652,76 @@ function closePanel() {
 
 // ════════════════════════════════════════════════════════════
 //  CAROUSEL
+//  - Filters out null entries so only real photos get slides
+//  - onerror on each img swaps to placeholder if file not found
+//  - activePhotos tracks the real list for the counter
 // ════════════════════════════════════════════════════════════
+const PH_HTML = `<div class="ph"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="10" width="40" height="28" rx="3" stroke="white" stroke-width="2"/><circle cx="17" cy="22" r="4" stroke="white" stroke-width="2"/><path d="M4 32L14 22L21 29L29 21L44 32" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg><span>Photo unavailable</span></div>`;
+
+let activePhotos = [];
+
 function buildCarousel(photos, name) {
   curSlide = 0;
+  // Only real (non-null, non-empty) photo paths
+  activePhotos = (photos || []).filter(p => p && p.trim() !== '');
+
   const track = document.getElementById('car-track');
   const dots  = document.getElementById('car-dots');
   track.innerHTML = ''; dots.innerHTML = '';
-  photos.forEach((photo,i) => {
+
+  if (activePhotos.length === 0) {
+    // No photos at all — show one placeholder
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
-    slide.innerHTML = photo
-      ? `<img src="${photo}" alt="${name} photo ${i+1}" loading="lazy">`
-      : `<div class="ph"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="10" width="40" height="28" rx="3" stroke="white" stroke-width="2"/><circle cx="17" cy="22" r="4" stroke="white" stroke-width="2"/><path d="M4 32L14 22L21 29L29 21L44 32" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg><span>Photo ${i+1} — Add your image here</span></div>`;
+    slide.innerHTML = PH_HTML;
     track.appendChild(slide);
+    document.getElementById('car-count').textContent = '';
+    return;
+  }
+
+  activePhotos.forEach((photo, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'carousel-slide';
+
+    const img = document.createElement('img');
+    img.src = photo;
+    img.alt = `${name} photo ${i + 1}`;
+    img.loading = 'lazy';
+    // If image fails to load, swap the whole slide to a placeholder
+    img.onerror = function() {
+      slide.innerHTML = PH_HTML;
+    };
+    slide.appendChild(img);
+    track.appendChild(slide);
+
     const dot = document.createElement('div');
-    dot.className = 'dot'+(i===0?' active':'');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
     dot.onclick = () => goSlide(i);
     dots.appendChild(dot);
   });
+
   refreshCarousel();
 }
+
 function refreshCarousel() {
-  if (!activeLoc) return;
-  document.getElementById('car-track').style.transform = `translateX(-${curSlide*100}%)`;
-  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active',i===curSlide));
-  document.getElementById('car-count').textContent = `${curSlide+1} / ${activeLoc.photos.length}`;
+  const n = activePhotos.length;
+  if (n === 0) return;
+  document.getElementById('car-track').style.transform = `translateX(-${curSlide * 100}%)`;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === curSlide));
+  document.getElementById('car-count').textContent = `${curSlide + 1} / ${n}`;
 }
-function nextSlide() { if(activeLoc){ curSlide=(curSlide+1)%activeLoc.photos.length; refreshCarousel(); } }
-function prevSlide() { if(activeLoc){ curSlide=(curSlide-1+activeLoc.photos.length)%activeLoc.photos.length; refreshCarousel(); } }
-function goSlide(i)  { curSlide=i; refreshCarousel(); }
+
+function nextSlide() {
+  if (activePhotos.length < 2) return;
+  curSlide = (curSlide + 1) % activePhotos.length;
+  refreshCarousel();
+}
+function prevSlide() {
+  if (activePhotos.length < 2) return;
+  curSlide = (curSlide - 1 + activePhotos.length) % activePhotos.length;
+  refreshCarousel();
+}
+function goSlide(i) { curSlide = i; refreshCarousel(); }
 
 document.addEventListener('keydown', e => {
   if(e.key==='Escape')     closePanel();
