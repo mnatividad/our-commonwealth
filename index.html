@@ -4,201 +4,73 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Our Commonwealth — Virginia</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --navy:         #232D4B;
-      --navy-dark:    #141E3C;
-      --navy-mid:     #344776;
-      --navy-light:   #4E6397;
-      --orange:       #E57200;
-      --orange-light: #F4A245;
-      --cream:        #F5F0E6;
-      --cream-dark:   #E8E0D0;
-      --text-dark:    #1A1A1A;
-      --text-mid:     #4A4A4A;
-      --white:        #FFFFFF;
-      --panel-w:      440px;
+      --navy: #232D4B; --navy-dark: #141E3C; --navy-mid: #344776;
+      --orange: #E57200; --orange-light: #F4A245;
+      --cream: #F5F0E6; --cream-dark: #E8E0D0;
+      --text-dark: #1A1A1A; --text-mid: #4A4A4A; --white: #FFFFFF;
+      --panel-w: 440px;
     }
-
-    html, body {
-      height: 100%; overflow: hidden;
-      font-family: 'Source Serif 4', Georgia, serif;
-      background: var(--navy-dark);
-    }
-
-    /* ── HEADER ── */
-    #header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      height: 58px; background: var(--navy-dark);
-      padding: 0 24px;
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .logo-title {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 22px; font-weight: 600;
-      color: var(--cream); letter-spacing: 0.02em; line-height: 1;
-    }
-    .logo-sub {
-      font-size: 11px; font-weight: 300; color: var(--orange-light);
-      letter-spacing: 0.16em; text-transform: uppercase; margin-top: 3px;
-    }
+    html, body { height: 100%; overflow: hidden; font-family: 'Source Serif 4', Georgia, serif; background: var(--navy-dark); }
+    #header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 58px; background: var(--navy-dark); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .logo-title { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 600; color: var(--cream); letter-spacing: 0.02em; line-height: 1; }
+    .logo-sub { font-size: 11px; font-weight: 300; color: var(--orange-light); letter-spacing: 0.16em; text-transform: uppercase; margin-top: 3px; }
     .header-hint { font-size: 13px; font-style: italic; color: rgba(255,255,255,0.38); }
-
-    /* ── MAP ── */
-    #map {
-      position: fixed; top: 58px; left: 0; right: 0; bottom: 0; z-index: 1;
-      transition: right 0.42s cubic-bezier(0.25,0.46,0.45,0.94);
-    }
+    #map { position: fixed; top: 58px; left: 0; right: 0; bottom: 0; z-index: 1; transition: right 0.42s cubic-bezier(0.25,0.46,0.45,0.94); }
     #map.panel-open { right: var(--panel-w); }
     .leaflet-container { background: #111828 !important; }
-
-    /* ── PANEL ── */
-    #panel {
-      position: fixed; top: 58px;
-      right: calc(-1 * var(--panel-w)); width: var(--panel-w); bottom: 0;
-      z-index: 500; background: var(--cream);
-      display: flex; flex-direction: column;
-      transition: right 0.42s cubic-bezier(0.25,0.46,0.45,0.94);
-      overflow: hidden; box-shadow: -4px 0 28px rgba(0,0,0,0.3);
-    }
+    #panel { position: fixed; top: 58px; right: calc(-1 * var(--panel-w)); width: var(--panel-w); bottom: 0; z-index: 500; background: var(--cream); display: flex; flex-direction: column; transition: right 0.42s cubic-bezier(0.25,0.46,0.45,0.94); overflow: hidden; box-shadow: -4px 0 28px rgba(0,0,0,0.3); }
     #panel.open { right: 0; }
-    #panel-close {
-      position: absolute; top: 13px; right: 13px;
-      width: 32px; height: 32px;
-      background: rgba(0,0,0,0.09); border: none; border-radius: 50%;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      z-index: 10; transition: background 0.18s;
-    }
+    #panel-close { position: absolute; top: 13px; right: 13px; width: 32px; height: 32px; background: rgba(0,0,0,0.09); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: background 0.18s; }
     #panel-close:hover { background: rgba(0,0,0,0.18); }
     #panel-close svg { width: 13px; height: 13px; }
-
-    /* ── CAROUSEL ── */
-    .carousel {
-      position: relative; width: 100%; height: 248px;
-      flex-shrink: 0; background: var(--navy-dark); overflow: hidden;
-    }
+    .carousel { position: relative; width: 100%; height: 248px; flex-shrink: 0; background: var(--navy-dark); overflow: hidden; }
     .carousel-track { display: flex; height: 100%; transition: transform 0.34s ease; }
     .carousel-slide { min-width: 100%; height: 100%; overflow: hidden; }
     .carousel-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .ph {
-      width: 100%; height: 100%;
-      background: linear-gradient(145deg, #141E3C 0%, #232D4B 55%, #141E3C 100%);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 11px;
-    }
+    .ph { width: 100%; height: 100%; background: linear-gradient(145deg, #141E3C 0%, #232D4B 55%, #141E3C 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 11px; }
     .ph svg { width: 46px; height: 46px; opacity: 0.25; }
     .ph span { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
-    .car-btn {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      width: 34px; height: 34px; background: rgba(0,0,0,0.38); border: none;
-      border-radius: 50%; cursor: pointer; display: flex; align-items: center;
-      justify-content: center; color: white; font-size: 18px; line-height: 1; z-index: 5;
-      transition: background 0.18s;
-    }
+    .car-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; background: rgba(0,0,0,0.38); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; line-height: 1; z-index: 5; transition: background 0.18s; }
     .car-btn:hover { background: rgba(0,0,0,0.62); }
     .car-btn.prev { left: 10px; } .car-btn.next { right: 10px; }
-    .car-dots {
-      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 6px; z-index: 5;
-    }
-    .dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.35); cursor: pointer;
-      transition: background 0.18s, transform 0.18s;
-    }
+    .car-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.35); cursor: pointer; transition: background 0.18s, transform 0.18s; }
     .dot.active { background: var(--orange-light); transform: scale(1.4); }
-    .car-count {
-      position: absolute; top: 10px; left: 10px;
-      background: rgba(0,0,0,0.42); color: #fff; font-size: 11px;
-      padding: 3px 9px; border-radius: 12px; letter-spacing: 0.05em; z-index: 5;
-    }
-
-    /* ── PANEL CONTENT ── */
-    .p-body {
-      flex: 1; overflow-y: auto; padding: 22px 24px 36px;
-      scrollbar-width: thin; scrollbar-color: var(--cream-dark) transparent;
-    }
-    .region-tag {
-      display: inline-block; background: var(--navy); color: var(--cream);
-      font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
-      padding: 4px 10px; border-radius: 2px; margin-bottom: 9px;
-    }
-    .p-name {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 28px; font-weight: 600;
-      color: var(--text-dark); line-height: 1.15; margin-bottom: 7px;
-    }
-    .industry-badge {
-      display: inline-block; background: var(--orange); color: var(--white);
-      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 4px 10px; border-radius: 2px; margin-bottom: 18px;
-    }
+    .car-count { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.42); color: #fff; font-size: 11px; padding: 3px 9px; border-radius: 12px; letter-spacing: 0.05em; z-index: 5; }
+    .p-body { flex: 1; overflow-y: auto; padding: 22px 24px 36px; scrollbar-width: thin; scrollbar-color: var(--cream-dark) transparent; }
+    .region-tag { display: inline-block; background: var(--navy); color: var(--cream); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; margin-bottom: 9px; }
+    .p-name { font-family: 'Playfair Display', Georgia, serif; font-size: 28px; font-weight: 600; color: var(--text-dark); line-height: 1.15; margin-bottom: 7px; }
+    .industry-badge { display: inline-block; background: var(--orange); color: var(--white); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; margin-bottom: 18px; }
     .divider { width: 38px; height: 2px; background: var(--orange); margin-bottom: 16px; }
     .p-text { font-size: 15px; line-height: 1.8; color: var(--text-mid); margin-bottom: 20px; }
     .p-text p + p { margin-top: 13px; }
-    .spotlight {
-      background: var(--white); border: 1px solid var(--cream-dark);
-      border-radius: 6px; padding: 15px 17px; margin-top: 6px;
-    }
+    .spotlight { background: var(--white); border: 1px solid var(--cream-dark); border-radius: 6px; padding: 15px 17px; margin-top: 6px; }
     .spotlight-lbl { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
     .spotlight-name { font-family: 'Playfair Display', Georgia, serif; font-size: 17px; font-weight: 600; color: var(--text-dark); margin-bottom: 5px; }
     .spotlight-desc { font-size: 13px; color: var(--text-mid); line-height: 1.65; margin-bottom: 10px; }
     .spotlight-link { font-size: 12px; color: var(--navy-mid); text-decoration: none; letter-spacing: 0.04em; }
     .spotlight-link:hover { color: var(--orange); }
-    .note {
-      margin-top: 18px; border-left: 3px solid var(--orange);
-      padding: 12px 14px; background: rgba(229,114,0,0.06); border-radius: 0 4px 4px 0;
-    }
-    .note-lbl { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
-    .note-text { font-size: 13px; font-style: italic; color: var(--text-mid); line-height: 1.65; }
-
-    /* ── REGION NAV ── */
-    #region-nav {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      z-index: 200; display: flex; gap: 7px;
-      background: rgba(14,20,40,0.90); backdrop-filter: blur(8px);
-      padding: 9px 13px; border-radius: 40px;
-      border: 1px solid rgba(255,255,255,0.10);
-      transition: left 0.42s ease, transform 0.42s ease;
-    }
+    #region-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; gap: 7px; background: rgba(14,20,40,0.90); backdrop-filter: blur(8px); padding: 9px 13px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.10); transition: left 0.42s ease, transform 0.42s ease; }
     #region-nav.panel-open { left: calc(50% - var(--panel-w) / 2); }
-    .rpill {
-      background: transparent; border: 1px solid rgba(255,255,255,0.20);
-      color: rgba(255,255,255,0.60); font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 12px; padding: 5px 14px; border-radius: 20px;
-      cursor: pointer; transition: all 0.18s; white-space: nowrap;
-    }
+    .rpill { background: transparent; border: 1px solid rgba(255,255,255,0.20); color: rgba(255,255,255,0.60); font-family: 'Source Serif 4', Georgia, serif; font-size: 12px; padding: 5px 14px; border-radius: 20px; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
     .rpill:hover, .rpill.active { background: var(--orange); border-color: var(--orange); color: #fff; }
-
     .cmarker { cursor: pointer; }
-
-    /* ── LEAFLET OVERRIDES ── */
-    .va-tt {
-      background: var(--navy-dark) !important; border: 1px solid rgba(255,255,255,0.15) !important;
-      border-radius: 4px !important; padding: 4px 10px !important;
-      font-family: 'Source Serif 4', Georgia, serif !important;
-      font-size: 12px !important; color: var(--cream) !important;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
-    }
+    .va-tt { background: var(--navy-dark) !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 4px !important; padding: 4px 10px !important; font-family: 'Source Serif 4', Georgia, serif !important; font-size: 12px !important; color: var(--cream) !important; box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important; }
     .va-tt::before { border-top-color: var(--navy-dark) !important; }
     .leaflet-attribution-flag { display: none !important; }
     .leaflet-control-attribution { background: rgba(14,20,40,0.7) !important; color: rgba(255,255,255,0.35) !important; font-size: 10px !important; }
     .leaflet-control-attribution a { color: rgba(255,255,255,0.45) !important; }
     .leaflet-control-zoom a { background: rgba(14,20,40,0.88) !important; color: rgba(255,255,255,0.7) !important; border-color: rgba(255,255,255,0.12) !important; }
     .leaflet-control-zoom a:hover { background: var(--navy-mid) !important; color: #fff !important; }
-
-    /* ── MOBILE ── */
     @media (max-width: 768px) {
       :root { --panel-w: 100vw; }
       #map.panel-open { right: 0; bottom: 62vh; }
-      #panel { top: auto; bottom: -100vh; right: 0; width: 100%; height: 72vh; border-radius: 16px 16px 0 0; box-shadow: 0 -4px 32px rgba(0,0,0,0.32); }
+      #panel { top: auto; bottom: -100vh; right: 0; width: 100%; height: 72vh; border-radius: 16px 16px 0 0; }
       #panel.open { bottom: 0; }
       #region-nav { bottom: 10px; max-width: calc(100vw - 28px); overflow-x: auto; justify-content: flex-start; border-radius: 12px; }
       #region-nav.panel-open { opacity: 0; pointer-events: none; }
@@ -209,7 +81,6 @@
 </head>
 <body>
 
-<!-- ═══════ HEADER ═══════ -->
 <header id="header">
   <div>
     <div class="logo-title">Our Commonwealth</div>
@@ -218,10 +89,8 @@
   <span class="header-hint">Select a region to explore</span>
 </header>
 
-<!-- ═══════ MAP ═══════ -->
 <div id="map"></div>
 
-<!-- ═══════ PANEL ═══════ -->
 <div id="panel" role="complementary" aria-label="Region detail">
   <button id="panel-close" onclick="closePanel()" aria-label="Close panel">
     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -230,382 +99,431 @@
   </button>
   <div class="carousel">
     <div class="carousel-track" id="car-track"></div>
-    <button class="car-btn prev" onclick="prevSlide()" aria-label="Previous">&#8249;</button>
-    <button class="car-btn next" onclick="nextSlide()" aria-label="Next">&#8250;</button>
+    <button class="car-btn prev" onclick="prevSlide()">&#8249;</button>
+    <button class="car-btn next" onclick="nextSlide()">&#8250;</button>
     <div class="car-dots" id="car-dots"></div>
     <div class="car-count" id="car-count">1 / 3</div>
   </div>
   <div class="p-body" id="p-body"></div>
 </div>
 
-<!-- ═══════ REGION NAV ═══════ -->
-<nav id="region-nav" aria-label="Region navigation"></nav>
+<nav id="region-nav"></nav>
 
-<!-- ═══════ SCRIPTS ═══════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script>
 
 // ════════════════════════════════════════════════════════════
-//  REGION → COUNTY FIPS MAPPING
+//  ALL 9 VIRGINIA TOURISM REGIONS — colors + display names
+//  Matches the official virginia.org / VTC region map
+//  SW Virginia = Blue Ridge Highlands + Heart of Appalachia combined
 // ════════════════════════════════════════════════════════════
-const REGION_FIPS = {
-
-  "sw-virginia": new Set([
-    "51105", // Lee
-    "51169", // Scott
-    "51195", // Wise
-    "51051", // Dickenson
-    "51167", // Russell
-    "51027", // Buchanan
-    "51185", // Tazewell
-    "51173", // Smyth
-    "51191", // Washington
-    "51021", // Bland
-    "51197", // Wythe
-    "51077", // Grayson
-    "51035", // Carroll
-    "51141", // Patrick
-    "51063", // Floyd
-    "51155", // Pulaski
-    "51071", // Giles
-    "51045", // Craig
-    "51089", // Henry
-    "51121", // Montgomery
-    "51161", // Roanoke County
-    "51720", // Norton City
-    "51520", // Bristol City
-    "51640", // Galax City
-    "51690", // Martinsville City
-    "51750", // Radford City
-    "51770", // Roanoke City
-    "51775", // Salem City
-  ]),
-
-  "hampton-roads": new Set([
-    "51810", // Virginia Beach
-    "51710", // Norfolk
-    "51550", // Chesapeake
-    "51740", // Portsmouth
-    "51800", // Suffolk
-    "51650", // Hampton
-    "51700", // Newport News
-    "51093", // Isle of Wight
-    "51095", // James City
-    "51199", // York
-    "51735", // Poquoson
-    "51830", // Williamsburg
-    "51181", // Surry
-    "51175", // Southampton
-    "51620", // Franklin City
-    "51073", // Gloucester
-    "51115", // Mathews
-  ]),
-
-  "shenandoah": new Set([
-    "51015", // Augusta
-    "51165", // Rockingham
-    "51171", // Shenandoah
-    "51139", // Page
-    "51187", // Warren
-    "51069", // Frederick
-    "51043", // Clarke
-    "51163", // Rockbridge
-    "51017", // Bath
-    "51091", // Highland
-    "51023", // Botetourt
-    "51840", // Winchester City
-    "51820", // Waynesboro City
-    "51790", // Staunton City
-    "51660", // Harrisonburg City
-    "51678", // Lexington City
-    "51530", // Buena Vista City
-  ]),
-
-  "charlottesville": new Set([
-    "51003", // Albemarle
-    "51125", // Nelson
-    "51065", // Fluvanna
-    "51079", // Greene
-    "51109", // Louisa
-    "51137", // Orange
-    "51113", // Madison
-    "51047", // Culpeper
-    "51157", // Rappahannock
-    "51049", // Cumberland
-    "51029", // Buckingham
-    "51009", // Amherst
-    "51031", // Campbell
-    "51019", // Bedford County
-    "51515", // Bedford City
-    "51011", // Appomattox
-    "51147", // Prince Edward
-    "51540", // Charlottesville City
-    "51680", // Lynchburg City
-  ]),
-
-  // NoVA: Fairfax, Loudoun, Arlington, Prince William, Alexandria only
-  "nova": new Set([
-    "51059", // Fairfax County
-    "51107", // Loudoun County
-    "51013", // Arlington County
-    "51153", // Prince William County
-    "51510", // Alexandria City
-    "51610", // Falls Church City
-    "51683", // Manassas City
-    "51685", // Manassas Park City
-  ]),
+const ALL_REGIONS = {
+  "sw-virginia":        { color: "#E8923A", name: "Southwest Virginia" },
+  "virginia-mountains": { color: "#5B8B6E", name: "Virginia Mountains" },
+  "shenandoah":         { color: "#4A7C59", name: "Shenandoah Valley" },
+  "southern-virginia":  { color: "#9B7055", name: "Southern Virginia" },
+  "central-virginia":   { color: "#8E6B9E", name: "Central Virginia" },
+  "nova":               { color: "#4E6FA0", name: "Northern Virginia" },
+  "hampton-roads":      { color: "#CC6600", name: "Hampton Roads" },
+  "chesapeake-bay":     { color: "#4A8FA4", name: "Chesapeake Bay" },
+  "eastern-shore":      { color: "#6BAAB8", name: "Eastern Shore" },
 };
 
+// ════════════════════════════════════════════════════════════
+//  NAME → REGION MAPPING
+//  Uses the county/city NAME from us-atlas TopoJSON properties
+//  County names: "Fairfax County", "Roanoke County" (with "County" suffix)
+//  City names:   "Roanoke city", "Norfolk city" (lowercase "city")
+//  Matching logic strips " County" suffix so "Fairfax County" → "Fairfax"
+//  then looks up in this table. City names kept as-is.
+// ════════════════════════════════════════════════════════════
+const NAME_TO_REGION = {
+
+  // ── SOUTHWEST VIRGINIA (Blue Ridge Highlands + Heart of Appalachia) ──
+  "Bland":"sw-virginia",
+  "Buchanan":"sw-virginia",
+  "Carroll":"sw-virginia",
+  "Dickenson":"sw-virginia",
+  "Floyd":"sw-virginia",
+  "Giles":"sw-virginia",
+  "Grayson":"sw-virginia",
+  "Lee":"sw-virginia",
+  "Montgomery":"sw-virginia",
+  "Pulaski":"sw-virginia",
+  "Russell":"sw-virginia",
+  "Scott":"sw-virginia",
+  "Smyth":"sw-virginia",
+  "Tazewell":"sw-virginia",
+  "Washington":"sw-virginia",
+  "Wise":"sw-virginia",
+  "Wythe":"sw-virginia",
+  // Independent cities
+  "Bristol city":"sw-virginia",
+  "Galax city":"sw-virginia",
+  "Norton city":"sw-virginia",
+  "Radford city":"sw-virginia",
+
+  // ── VIRGINIA MOUNTAINS ──────────────────────────────────────────────
+  "Alleghany":"virginia-mountains",
+  "Bath":"virginia-mountains",
+  "Botetourt":"virginia-mountains",
+  "Craig":"virginia-mountains",
+  "Roanoke":"virginia-mountains",         // Roanoke County (stripped)
+  // Independent cities
+  "Covington city":"virginia-mountains",
+  "Roanoke city":"virginia-mountains",
+  "Salem city":"virginia-mountains",
+
+  // ── SHENANDOAH VALLEY ───────────────────────────────────────────────
+  "Augusta":"shenandoah",
+  "Clarke":"shenandoah",
+  "Frederick":"shenandoah",
+  "Highland":"shenandoah",
+  "Page":"shenandoah",
+  "Rockbridge":"shenandoah",
+  "Rockingham":"shenandoah",
+  "Shenandoah":"shenandoah",              // Shenandoah County (stripped)
+  "Warren":"shenandoah",
+  // Independent cities
+  "Buena Vista city":"shenandoah",
+  "Harrisonburg city":"shenandoah",
+  "Lexington city":"shenandoah",
+  "Staunton city":"shenandoah",
+  "Waynesboro city":"shenandoah",
+  "Winchester city":"shenandoah",
+
+  // ── SOUTHERN VIRGINIA ───────────────────────────────────────────────
+  "Brunswick":"southern-virginia",
+  "Charlotte":"southern-virginia",
+  "Franklin":"southern-virginia",         // Franklin County (not Franklin city)
+  "Greensville":"southern-virginia",
+  "Halifax":"southern-virginia",
+  "Henry":"southern-virginia",
+  "Lunenburg":"southern-virginia",
+  "Mecklenburg":"southern-virginia",
+  "Nottoway":"southern-virginia",
+  "Patrick":"southern-virginia",
+  "Pittsylvania":"southern-virginia",
+  "Sussex":"southern-virginia",
+  // Independent cities
+  "Danville city":"southern-virginia",
+  "Emporia city":"southern-virginia",
+  "Martinsville city":"southern-virginia",
+
+  // ── CENTRAL VIRGINIA ────────────────────────────────────────────────
+  "Albemarle":"central-virginia",
+  "Amelia":"central-virginia",
+  "Amherst":"central-virginia",
+  "Appomattox":"central-virginia",
+  "Bedford":"central-virginia",           // Bedford County (stripped)
+  "Buckingham":"central-virginia",
+  "Campbell":"central-virginia",
+  "Caroline":"central-virginia",
+  "Chesterfield":"central-virginia",
+  "Cumberland":"central-virginia",
+  "Dinwiddie":"central-virginia",
+  "Fluvanna":"central-virginia",
+  "Goochland":"central-virginia",
+  "Greene":"central-virginia",
+  "Hanover":"central-virginia",
+  "Henrico":"central-virginia",
+  "Louisa":"central-virginia",
+  "Madison":"central-virginia",
+  "Nelson":"central-virginia",
+  "New Kent":"central-virginia",
+  "Orange":"central-virginia",
+  "Powhatan":"central-virginia",
+  "Prince Edward":"central-virginia",
+  "Prince George":"central-virginia",
+  // Independent cities
+  "Bedford city":"central-virginia",
+  "Charlottesville city":"central-virginia",
+  "Colonial Heights city":"central-virginia",
+  "Hopewell city":"central-virginia",
+  "Lynchburg city":"central-virginia",
+  "Petersburg city":"central-virginia",
+  "Richmond city":"central-virginia",
+
+  // ── NORTHERN VIRGINIA ───────────────────────────────────────────────
+  "Arlington":"nova",
+  "Culpeper":"nova",
+  "Fairfax":"nova",                       // Fairfax County (stripped)
+  "Fauquier":"nova",
+  "Loudoun":"nova",
+  "Prince William":"nova",
+  "Rappahannock":"nova",
+  "Spotsylvania":"nova",
+  "Stafford":"nova",
+  // Independent cities
+  "Alexandria city":"nova",
+  "Fairfax city":"nova",
+  "Falls Church city":"nova",
+  "Fredericksburg city":"nova",
+  "Manassas city":"nova",
+  "Manassas Park city":"nova",
+
+  // ── HAMPTON ROADS ───────────────────────────────────────────────────
+  "Charles City":"hampton-roads",         // "Charles City County" stripped
+  "Isle of Wight":"hampton-roads",
+  "James City":"hampton-roads",
+  "Southampton":"hampton-roads",
+  "Surry":"hampton-roads",
+  "York":"hampton-roads",
+  // Independent cities
+  "Chesapeake city":"hampton-roads",
+  "Franklin city":"hampton-roads",        // Franklin city (not Franklin County)
+  "Hampton city":"hampton-roads",
+  "Newport News city":"hampton-roads",
+  "Norfolk city":"hampton-roads",
+  "Poquoson city":"hampton-roads",
+  "Portsmouth city":"hampton-roads",
+  "Suffolk city":"hampton-roads",
+  "Virginia Beach city":"hampton-roads",
+  "Williamsburg city":"hampton-roads",
+
+  // ── CHESAPEAKE BAY ───────────────────────────────────────────────────
+  "Essex":"chesapeake-bay",
+  "Gloucester":"chesapeake-bay",
+  "King and Queen":"chesapeake-bay",
+  "King George":"chesapeake-bay",
+  "King William":"chesapeake-bay",
+  "Lancaster":"chesapeake-bay",
+  "Mathews":"chesapeake-bay",
+  "Middlesex":"chesapeake-bay",
+  "Northumberland":"chesapeake-bay",
+  "Richmond":"chesapeake-bay",            // Richmond County (not Richmond city)
+  "Westmoreland":"chesapeake-bay",
+
+  // ── EASTERN SHORE ────────────────────────────────────────────────────
+  "Accomack":"eastern-shore",
+  "Northampton":"eastern-shore",
+};
+
+// Helper: normalize feature name for lookup
+// "Fairfax County" → "Fairfax"  |  "Roanoke city" → "Roanoke city"
+function normalizeName(raw) {
+  if (!raw) return "";
+  // Strip " County" suffix (case-insensitive), keep " city" suffix
+  return raw.replace(/\s+County$/i, "").trim();
+}
+
+function getRegionId(feature) {
+  const raw = (feature.properties && feature.properties.name) || "";
+  const norm = normalizeName(raw);
+  // Try normalized name first, then raw
+  return NAME_TO_REGION[norm] || NAME_TO_REGION[raw] || null;
+}
+
 
 // ════════════════════════════════════════════════════════════
-//  INLINE VIRGINIA OUTLINE — instant fallback while counties load
+//  INLINE VIRGINIA OUTLINE — instant fallback
 // ════════════════════════════════════════════════════════════
 const VA_OUTLINE = {
-  type: "Feature", properties: {},
-  geometry: {
-    type: "MultiPolygon",
-    coordinates: [
-      [[
-        [-83.70,36.60],[-83.35,36.60],[-82.50,36.60],[-81.70,36.58],
-        [-81.00,36.56],[-80.00,36.54],[-79.00,36.54],[-77.90,36.54],
-        [-77.20,36.54],[-76.30,36.55],[-76.00,36.55],[-75.88,36.55],
-        [-75.90,36.80],[-75.95,37.10],[-75.97,37.25],
-        [-76.05,37.50],[-76.10,37.75],[-76.18,38.00],
-        [-76.28,38.07],[-76.48,38.32],[-76.70,38.48],
-        [-76.92,38.72],[-77.04,38.88],[-77.08,39.05],
-        [-77.12,39.20],[-77.25,39.32],
-        [-77.80,39.30],[-78.35,39.38],[-79.00,39.28],
-        [-79.48,39.32],[-79.65,39.20],[-79.82,39.02],
-        [-80.00,38.87],[-80.30,38.52],[-80.52,38.28],
-        [-80.72,38.08],[-81.00,37.65],[-81.30,37.45],
-        [-81.68,37.20],[-82.05,37.28],[-82.55,37.20],
-        [-83.02,36.95],[-83.35,36.72],[-83.70,36.62],[-83.70,36.60]
-      ]],
-      [[
-        [-75.88,36.55],[-75.30,37.20],[-75.22,37.50],
-        [-75.18,37.80],[-75.20,38.02],[-75.25,38.15],
-        [-75.35,38.20],[-75.50,38.10],[-75.65,37.95],
-        [-75.75,37.75],[-75.85,37.45],[-75.92,37.10],
-        [-75.90,36.80],[-75.88,36.55]
-      ]]
+  type:"Feature", properties:{},
+  geometry:{
+    type:"MultiPolygon",
+    coordinates:[
+      [[[-83.70,36.60],[-83.35,36.60],[-82.50,36.60],[-81.70,36.58],[-81.00,36.56],
+        [-80.00,36.54],[-79.00,36.54],[-77.90,36.54],[-77.20,36.54],[-76.30,36.55],
+        [-76.00,36.55],[-75.88,36.55],[-75.90,36.80],[-75.95,37.10],[-75.97,37.25],
+        [-76.05,37.50],[-76.10,37.75],[-76.18,38.00],[-76.28,38.07],[-76.48,38.32],
+        [-76.70,38.48],[-76.92,38.72],[-77.04,38.88],[-77.08,39.05],[-77.12,39.20],
+        [-77.25,39.32],[-77.80,39.30],[-78.35,39.38],[-79.00,39.28],[-79.48,39.32],
+        [-79.65,39.20],[-79.82,39.02],[-80.00,38.87],[-80.30,38.52],[-80.52,38.28],
+        [-80.72,38.08],[-81.00,37.65],[-81.30,37.45],[-81.68,37.20],[-82.05,37.28],
+        [-82.55,37.20],[-83.02,36.95],[-83.35,36.72],[-83.70,36.62],[-83.70,36.60]]],
+      [[[-75.88,36.55],[-75.30,37.20],[-75.22,37.50],[-75.18,37.80],[-75.20,38.02],
+        [-75.25,38.15],[-75.35,38.20],[-75.50,38.10],[-75.65,37.95],[-75.75,37.75],
+        [-75.85,37.45],[-75.92,37.10],[-75.90,36.80],[-75.88,36.55]]]
     ]
   }
 };
 
 
 // ════════════════════════════════════════════════════════════
-//  LOCATION DATA
-//  photos[] — paths relative to index.html e.g. "photos/My_Photo.jpeg"
-//  Set to null to show a placeholder tile instead
+//  CONTENT LOCATIONS — only 5 regions have pop-up content
 // ════════════════════════════════════════════════════════════
 const LOCATIONS = [
   {
-    id: "sw-virginia",
-    name: "Southwest Virginia",
-    regionTag: "Appalachian Region",
-    lat: 36.90, lng: -82.30,
-    industry: "Energy & Transition",
-    color: "#F4A245",
-    photos: ["photos/Mt_Rogers.jpeg", null, null],
-    paragraph1: "Southwest Virginia is the Appalachian heartland of Virginia. Coal mining is a prominent industry here, generating $1.7B in annual GDP. The region's access to nature generates $1.4B in annual tourist spend for hiking, cycling, camping, and fishing.",
-    paragraph2: "The state government is also pushing an initiative to deploy small-modular nuclear reactors in the region to meet growing energy demands and diversify an economy long dependent on coal.",
-    spotlight: {
-      name: "Small Modular Nuclear Reactors",
-      desc: "Virginia is exploring deployment of small-modular nuclear reactors in Southwest Virginia to meet growing energy demands and reduce dependence on coal, potentially anchoring the region's next economic chapter.",
-      url: "#"
-    },
-    note: "[ Next month, I'll be hiking Mt. Rogers, Virginia's highest peak (5,729 feet).]"
+    id:"sw-virginia", name:"Southwest Virginia",
+    regionTag:"Blue Ridge Highlands & Heart of Appalachia",
+    lat:36.90, lng:-82.30, industry:"Energy & Transition",
+    photos:["photos/Mt_Rogers.jpeg",null,null],
+    paragraph1:"Southwest Virginia is the Appalachian heartland of Virginia. Coal mining is a prominent industry here, generating $1.7B in annual GDP. The region's access to nature generates $1.4B in annual tourist spend for hiking, cycling, camping, and fishing.",
+    paragraph2:"The region is home to Mt. Rogers, Virginia's highest peak at 5,729 feet. The state government is also pushing an initiative to deploy small-modular nuclear reactors in the region to meet growing energy demands and diversify an economy long dependent on coal.",
+    spotlight:{
+      name:"Small Modular Nuclear Reactors",
+      desc:"Virginia is exploring deployment of small-modular nuclear reactors in Southwest Virginia to meet growing energy demands and reduce dependence on coal, potentially anchoring the region's next economic chapter.",
+      url:"#"
+    }
   },
-
   {
-    id: "hampton-roads",
-    name: "Hampton Roads",
-    regionTag: "Coastal Virginia",
-    lat: 36.85, lng: -76.29,
-    industry: "Defense & Maritime",
-    color: "#E57200",
-    photos: ["photos/Surf_1.jpeg", "photos/Surf_2.jpeg", null],
-    paragraph1: "Hampton Roads is integral to American naval power. Home to Naval Station Norfolk, the world's largest naval base, and Newport News Shipbuilding, the region builds, repairs, and deploys the warships that project U.S. power globally. The Port of Virginia ranks among the East Coast's busiest commercial ports, and the defense ecosystem supports hundreds of thousands of civilian jobs across Virginia Beach, Chesapeake, Hampton, and Norfolk.",
-    paragraph2: "[ Paragraph 2 — Your visit or plans. Nauticus and the USS Wisconsin museum ship, the Norfolk waterfront, the contrast between the military footprint and the city's arts and restaurant scene. What it means that a single region produces this much of America's sea power. ~4–5 sentences. ]",
-    spotlight: {
-      name: "Atlantic Park Surf",
-      desc: "Virginia Beach is home to Atlantic Park Surf, a mixed-use development that includes one of two surfing wave pools on the East Coast, alongside retail stores, restaurants, and residential apartments.",
-      url: "#"
-    },
-    note: "[ Your personal note about Hampton Roads. ]"
+    id:"hampton-roads", name:"Hampton Roads",
+    regionTag:"Coastal Virginia",
+    lat:36.85, lng:-76.29, industry:"Defense & Maritime",
+    photos:["photos/Surf_1.jpeg","photos/Surf_2.jpeg",null],
+    paragraph1:"Hampton Roads is integral to American naval power. Home to Naval Station Norfolk, the world's largest naval base, and Newport News Shipbuilding, the region builds, repairs, and deploys the warships that project U.S. power globally. The Port of Virginia ranks among the East Coast's busiest commercial ports, and the defense ecosystem supports hundreds of thousands of civilian jobs across Virginia Beach, Chesapeake, Hampton, and Norfolk.",
+    paragraph2:"[ Paragraph 2 — Your visit or plans. Nauticus and the USS Wisconsin museum ship, the Norfolk waterfront, the contrast between the military footprint and the city's arts and restaurant scene. What it means that a single region produces this much of America's sea power. ~4-5 sentences. ]",
+    spotlight:{
+      name:"Atlantic Park Surf",
+      desc:"Virginia Beach is home to Atlantic Park Surf, a mixed-use development that includes one of two surfing wave pools on the East Coast, alongside retail stores, restaurants, and residential apartments.",
+      url:"#"
+    }
   },
-
   {
-    id: "shenandoah",
-    name: "Shenandoah Valley",
-    regionTag: "Western Virginia",
-    lat: 38.65, lng: -78.85,
-    industry: "Agriculture & Tourism",
-    color: "#4A7C59",
-    photos: ["photos/Shenandoah.jpeg", "photos/Rockingham.jpeg", null],
-    paragraph1: "Sandwiched between the Blue Ridge and the Allegheny mountains, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry. Virginia now has over 300 wineries, with many concentrated along the Shenandoah Valley Wine Trail. The region's natural topgraphy, Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive drive an outdoor tourism economy.",
-    paragraph2: "[ Paragraph 2 — Your personal visit. A winery you went to, a hike on Skyline Drive, a stop in Staunton or Harrisonburg. The contrast between the Valley's rural character and its proximity to DC and NoVA. ~4–5 sentences. ]",
-    spotlight: {
-      name: "Buc-ee's",
-      desc: "The iconic Texas-born travel center has planted its flag in the Shenandoah Valley, bringing its massive rest stops, fresh food, and merch to I-81 drivers.",
-      url: "#"
-    },
-    note: "[ Your personal note about the Valley. ]"
+    id:"shenandoah", name:"Shenandoah Valley",
+    regionTag:"Shenandoah Valley",
+    lat:38.65, lng:-78.85, industry:"Agriculture & Tourism",
+    photos:["photos/Shenandoah.jpeg","photos/Rockingham.jpeg",null],
+    paragraph1:"Sandwiched between the Blue Ridge and the Allegheny mountains, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry — Virginia now has over 300 wineries, with many concentrated along the Shenandoah Valley Wine Trail. The region's natural assets — Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive — drive a growing outdoor tourism economy.",
+    paragraph2:"[ Paragraph 2 — Your personal visit. A winery you went to, a hike on Skyline Drive, a stop in Staunton or Harrisonburg. The contrast between the Valley's rural character and its proximity to DC and NoVA. ~4-5 sentences. ]",
+    spotlight:{
+      name:"Buc-ee's",
+      desc:"The iconic Texas-born travel center has planted its flag in the Shenandoah Valley, bringing its famously massive rest stops, fresh food, and devoted following to I-81 travelers.",
+      url:"#"
+    }
   },
-
   {
-    id: "charlottesville",
-    name: "Piedmont",
-    regionTag: "Central Virginia",
-    lat: 38.03, lng: -78.48,
-    industry: "Knowledge Economy",
-    color: "#8E6B9E",
-    photos: ["photos/Rotunda.jpeg", "photos/Hazy.jpeg", null],
-    paragraph1: "The Virginia Piedmont is the rolling foothills country stretching from the Blue Ridge Mountains toward Richmond, dotted with working farms, historic estates, and what has quietly become one of America's most celebrated wine destinations. Virginia now has over 300 wineries contributing $1.7 billion in direct economic impact and 10,000 full-time jobs statewide. Anchoring the region, UVA generates $11.9 billion in total statewide economic impact and supports tens of thousands of jobs. The UVA Health System also serves as the primary academic medical center for a broad swath of rural central and western Virginia with no comparable alternative within a hundred miles.",
-    paragraph2: "The Piedmont is also where the Civil War effectively ended — Appomattox Court House, where Lee surrendered to Grant in April 1865, sits just east of Lynchburg, a quiet historic site that belies its enormous significance. [ Add your personal angle: two years living in Cville, favorite spots on the Downtown Mall, a vineyard you love, what the city taught you about Virginia. ~3–4 sentences. ]",
-    spotlight: {
-      name: "Early Mountain Vineyards",
-      desc: "One of the Piedmont's premier wineries, Early Mountain is known for its award-winning Petit Manseng.",
-      url: "#"
-    },
-    note: "Check out the UVA Kluge-Ruhe Aboriginal Art Museum in Pantops, home to the world's largest gallery of Australian Aboriginal art outside of Australia."
+    id:"central-virginia", name:"Central Virginia",
+    regionTag:"Central Virginia",
+    lat:38.03, lng:-78.48, industry:"Knowledge Economy",
+    photos:["photos/Rotunda.jpeg","photos/Hazy.jpeg",null],
+    paragraph1:"The Virginia Piedmont is rolling foothills country stretching from the Blue Ridge Mountains toward Richmond, dotted with working farms, historic estates, and what has quietly become one of America's most celebrated wine destinations. Virginia now has over 300 wineries contributing $1.7 billion in direct economic impact and 10,000 full-time jobs statewide. Anchoring the region, UVA generates $11.9 billion in total statewide economic impact and supports tens of thousands of jobs.",
+    paragraph2:"The region is also where the Civil War effectively ended — Appomattox Court House, where Lee surrendered to Grant in April 1865, sits just east of Lynchburg, a quiet historic site that belies its enormous significance. [ Add your personal angle: two years living in Cville, favorite spots on the Downtown Mall, a vineyard you love, what the city taught you about Virginia. ~3-4 sentences. ]",
+    spotlight:{
+      name:"Early Mountain Vineyards",
+      desc:"One of the Piedmont's premier wineries, Early Mountain is known for its award-winning Petit Manseng and stunning Blue Ridge views — a benchmark for Virginia's emerging wine identity.",
+      url:"#"
+    }
   },
-
   {
-    id: "nova",
-    name: "Northern Virginia",
-    regionTag: "National Capital Region",
-    lat: 38.88, lng: -77.18,
-    industry: "Technology & Defense",
-    color: "#5E7FA6",
-    photos: ["photos/Tysons.jpeg", "photos/Great_Falls.jpeg", null],
-    paragraph1: "Northern Virginia is Virginia's economic engine, generating nearly half the state's GDP from a geography that represents a fraction of its land area. Loudoun County hosts over 300 data centers, the highest concentration on earth, carrying an estimated 70% of the world's internet traffic nightly. The region is home to more than a dozen Fortune 500 companies including Amazon, Booz Allen Hamilton, General Dynamics, and Leidos, anchored by a federal contracting and cybersecurity ecosystem.",
-    paragraph2: "The region's history runs as deep as its economy. Manassas National Battlefield Park, site of two pivotal Civil War engagements. [ Add your personal angle: moving to DC, what draws you to this orbit, the diversity of Fairfax County, what NoVA's dominance means for the rest of Virginia. ~2–3 sentences. ]",
-    spotlight: {
-      name: "[ Local Business or Org — Northern Virginia ]",
-      desc: "[ A govtech company, civic tech org, local restaurant in Arlington or Tysons, or a community org that captures the region. ]",
-      url: "#"
-    },
-    note: "[ Your personal note — you're starting the next chapter here. ]"
+    id:"nova", name:"Northern Virginia",
+    regionTag:"Northern Virginia",
+    lat:38.88, lng:-77.18, industry:"Technology & Defense",
+    photos:["photos/Tysons.jpeg","photos/Great_Falls.jpeg",null],
+    paragraph1:"Northern Virginia is Virginia's economic engine, generating nearly half the state's GDP from a geography that represents a fraction of its land area. Loudoun County alone hosts over 300 data centers — the highest concentration on earth — carrying an estimated 70% of the world's internet traffic nightly. The region is home to more than a dozen Fortune 500 companies including Amazon, Booz Allen Hamilton, General Dynamics, and Leidos, anchored by a federal contracting and cybersecurity ecosystem that stretches from the Pentagon to Fort Belvoir.",
+    paragraph2:"The region's history runs as deep as its economy. Manassas National Battlefield Park — site of two pivotal Civil War engagements — sits just miles from where Amazon's HQ2 now rises in Arlington, a striking collision of American eras that captures NoVA's character better than any statistic. [ Add your personal angle: moving to DC, what draws you to this orbit, the diversity of Fairfax County, what NoVA's dominance means for the rest of Virginia. ~2-3 sentences. ]",
+    spotlight:{
+      name:"[ Local Business or Org — Northern Virginia ]",
+      desc:"[ A govtech company, civic tech org, local restaurant in Arlington or Tysons, or a community org that captures the region. ]",
+      url:"#"
+    }
   }
 ];
 
-// Build FIPS lookup
-const FIPS_TO_LOC = {};
-LOCATIONS.forEach(loc => {
-  REGION_FIPS[loc.id].forEach(fips => { FIPS_TO_LOC[fips] = loc; });
-});
+// Lookup by region ID for pop-up content
+const LOCATION_BY_ID = {};
+LOCATIONS.forEach(loc => { LOCATION_BY_ID[loc.id] = loc; });
 
 
 // ════════════════════════════════════════════════════════════
 //  MAP INIT
 // ════════════════════════════════════════════════════════════
-const map = L.map('map', { center: [37.8, -79.2], zoom: 7, zoomControl: false });
-
+const map = L.map('map', { center:[37.8,-79.2], zoom:7, zoomControl:false });
 const outlineLayer = L.geoJSON(VA_OUTLINE, {
-  style: {
-    color: 'rgba(245,240,230,0.30)', weight: 1,
-    fillColor: 'rgba(245,240,230,0.04)', fillOpacity: 1
-  }
+  style:{ color:'rgba(245,240,230,0.25)', weight:1, fillColor:'rgba(245,240,230,0.03)', fillOpacity:1 }
 }).addTo(map);
-
-L.control.zoom({ position: 'topright' }).addTo(map);
+L.control.zoom({ position:'topright' }).addTo(map);
 
 
 // ════════════════════════════════════════════════════════════
-//  COUNTY LAYER — fetched from us-atlas (works on GitHub Pages)
+//  COUNTY LAYER — name-matched, covers all 95 counties + 38 cities
 // ════════════════════════════════════════════════════════════
 let countyLayer = null;
 
 fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json')
   .then(r => r.json())
   .then(us => {
-    const allCounties = topojson.feature(us, us.objects.counties);
-    const vaFeatures  = allCounties.features.filter(f =>
-      String(f.id).padStart(5, '0').startsWith('51')
-    );
+    const vaFeatures = topojson.feature(us, us.objects.counties).features
+      .filter(f => String(f.id).padStart(5,'0').startsWith('51'));
 
     countyLayer = L.geoJSON(
-      { type: "FeatureCollection", features: vaFeatures },
+      { type:"FeatureCollection", features:vaFeatures },
       {
         style: feature => {
-          const fips = String(feature.id).padStart(5, '0');
-          const loc  = FIPS_TO_LOC[fips];
-          if (loc) {
-            return { color: loc.color, weight: 1.2, opacity: 0.75, fillColor: loc.color, fillOpacity: 0.18 };
+          const rid = getRegionId(feature);
+          if (rid && ALL_REGIONS[rid]) {
+            return {
+              color: ALL_REGIONS[rid].color, weight:1.2, opacity:0.75,
+              fillColor: ALL_REGIONS[rid].color, fillOpacity:0.20
+            };
           }
-          return { color: 'rgba(245,240,230,0.20)', weight: 0.5, fillColor: 'transparent', fillOpacity: 0 };
+          return { color:'rgba(245,240,230,0.15)', weight:0.5, fillColor:'transparent', fillOpacity:0 };
         },
         onEachFeature: (feature, layer) => {
-          const fips = String(feature.id).padStart(5, '0');
-          const loc  = FIPS_TO_LOC[fips];
-          if (!loc) return;
+          const rid = getRegionId(feature);
+          if (!rid) return;
+          const regionName = ALL_REGIONS[rid] ? ALL_REGIONS[rid].name : rid;
+          const hasContent = !!LOCATION_BY_ID[rid];
+
           layer.on({
             mouseover(e) {
-              e.target.setStyle({ fillOpacity: 0.35, weight: 1.8, opacity: 1 });
+              e.target.setStyle({ fillOpacity:0.38, weight:1.8, opacity:1 });
               e.target.bringToFront();
             },
             mouseout(e) {
-              if (activeLoc && activeLoc.id === loc.id) return;
+              if (activeLoc && activeLoc.id === rid) return;
               countyLayer.resetStyle(e.target);
             },
-            click() { openPanel(loc); }
+            click() {
+              if (hasContent) openPanel(LOCATION_BY_ID[rid]);
+            }
+          });
+
+          layer.bindTooltip(regionName, {
+            direction:'top', sticky:true, className:'va-tt'
           });
         }
       }
     ).addTo(map);
-
     map.removeLayer(outlineLayer);
   })
-  .catch(() => {
-    console.warn('County data unavailable — showing state outline fallback.');
-  });
+  .catch(() => console.warn('County data unavailable — using state outline fallback.'));
 
 
 // ════════════════════════════════════════════════════════════
-//  MARKERS
+//  MARKERS — only for the 5 content regions
 // ════════════════════════════════════════════════════════════
-let activeLoc = null;
-let curSlide  = 0;
+let activeLoc = null, curSlide = 0;
 const markerMap = {};
 
-function markerIcon(color, active = false) {
-  const r    = active ? 10 : 7;
+function markerIcon(color, active=false) {
+  const r = active ? 10 : 7;
   const ring = active
     ? `<circle cx="20" cy="20" r="15" fill="none" stroke="${color}" stroke-width="2" opacity="0.45"/>
        <circle cx="20" cy="20" r="19" fill="none" stroke="${color}" stroke-width="1" opacity="0.18"/>`
     : '';
   return L.divIcon({
-    html: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+    html:`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
       ${ring}
-      <circle cx="20" cy="20" r="${r + 4}" fill="rgba(14,20,40,0.80)"/>
+      <circle cx="20" cy="20" r="${r+4}" fill="rgba(14,20,40,0.80)"/>
       <circle cx="20" cy="20" r="${r}" fill="${color}"/>
     </svg>`,
-    className: 'cmarker', iconSize: [40,40], iconAnchor: [20,20]
+    className:'cmarker', iconSize:[40,40], iconAnchor:[20,20]
   });
 }
 
 LOCATIONS.forEach(loc => {
-  const m = L.marker([loc.lat, loc.lng], { icon: markerIcon(loc.color), zIndexOffset: 1000 }).addTo(map);
+  const color = ALL_REGIONS[loc.id].color;
+  const m = L.marker([loc.lat,loc.lng], { icon:markerIcon(color), zIndexOffset:1000 }).addTo(map);
   m.on('click', () => openPanel(loc));
-  m.bindTooltip(loc.name, { direction: 'top', offset: [0, -18], className: 'va-tt' });
-  markerMap[loc.id] = m;
+  m.bindTooltip(loc.name, { direction:'top', offset:[0,-18], className:'va-tt' });
+  markerMap[loc.id] = { marker:m, color };
 });
 
 
 // ════════════════════════════════════════════════════════════
-//  REGION NAV PILLS
+//  REGION NAV PILLS — only the 5 content regions
 // ════════════════════════════════════════════════════════════
 const navEl = document.getElementById('region-nav');
 const SHORT = {
-  "sw-virginia": "SW Virginia", "hampton-roads": "Hampton Roads",
-  "shenandoah": "Shenandoah", "charlottesville": "Piedmont", "nova": "NoVA"
+  "sw-virginia":"SW Virginia","hampton-roads":"Hampton Roads",
+  "shenandoah":"Shenandoah","central-virginia":"Central VA","nova":"NoVA"
 };
-
 LOCATIONS.forEach(loc => {
   const btn = document.createElement('button');
-  btn.className = 'rpill'; btn.id = `pill-${loc.id}`;
+  btn.className='rpill'; btn.id=`pill-${loc.id}`;
   btn.textContent = SHORT[loc.id] || loc.name;
   btn.onclick = () => openPanel(loc);
   navEl.appendChild(btn);
@@ -615,37 +533,29 @@ LOCATIONS.forEach(loc => {
 // ════════════════════════════════════════════════════════════
 //  PANEL OPEN / CLOSE
 // ════════════════════════════════════════════════════════════
-function highlightRegion(locId) {
+function highlightRegion(rid) {
   if (!countyLayer) return;
   countyLayer.eachLayer(layer => {
-    const fips = String(layer.feature.id).padStart(5, '0');
-    const loc  = FIPS_TO_LOC[fips];
-    if (!loc) return;
-    if (loc.id === locId) {
-      layer.setStyle({ fillOpacity: 0.35, weight: 1.8, opacity: 1 });
-      layer.bringToFront();
-    } else {
-      countyLayer.resetStyle(layer);
-    }
+    const frid = getRegionId(layer.feature);
+    if (!frid) return;
+    if (frid === rid) { layer.setStyle({ fillOpacity:0.40, weight:1.8, opacity:1 }); layer.bringToFront(); }
+    else countyLayer.resetStyle(layer);
   });
 }
-
-function resetAllRegions() {
-  if (!countyLayer) return;
-  countyLayer.eachLayer(layer => countyLayer.resetStyle(layer));
-}
+function resetAllRegions() { if (countyLayer) countyLayer.eachLayer(l => countyLayer.resetStyle(l)); }
 
 function openPanel(loc) {
   activeLoc = loc;
-
-  LOCATIONS.forEach(l => markerMap[l.id].setIcon(markerIcon(l.color, l.id === loc.id)));
+  const color = ALL_REGIONS[loc.id].color;
+  LOCATIONS.forEach(l => {
+    const c = ALL_REGIONS[l.id].color;
+    markerMap[l.id].marker.setIcon(markerIcon(c, l.id===loc.id));
+  });
   document.querySelectorAll('.rpill').forEach(p => p.classList.remove('active'));
   const pill = document.getElementById(`pill-${loc.id}`);
   if (pill) pill.classList.add('active');
-
   highlightRegion(loc.id);
   buildCarousel(loc.photos, loc.name);
-
   document.getElementById('p-body').innerHTML = `
     <span class="region-tag">${loc.regionTag}</span>
     <h2 class="p-name">${loc.name}</h2>
@@ -656,22 +566,14 @@ function openPanel(loc) {
       <div class="spotlight-lbl">Local Spotlight</div>
       <div class="spotlight-name">${loc.spotlight.name}</div>
       <div class="spotlight-desc">${loc.spotlight.desc}</div>
-      <a href="${loc.spotlight.url}" class="spotlight-link" target="_blank" rel="noopener">Learn more →</a>
-    </div>
-    <div class="note">
-      <div class="note-lbl">From the Road</div>
-      <div class="note-text">${loc.note}</div>
-    </div>
-  `;
+      <a href="${loc.spotlight.url}" class="spotlight-link" target="_blank" rel="noopener">Learn more &rarr;</a>
+    </div>`;
   document.getElementById('p-body').scrollTop = 0;
-
   document.getElementById('panel').classList.add('open');
   document.getElementById('map').classList.add('panel-open');
   document.getElementById('region-nav').classList.add('panel-open');
-
   setTimeout(() => {
-    const mob = window.innerWidth <= 768;
-    map.panTo(mob ? [loc.lat + 0.7, loc.lng] : [loc.lat, loc.lng - 1.3]);
+    map.panTo(window.innerWidth<=768 ? [loc.lat+0.7,loc.lng] : [loc.lat,loc.lng-1.3]);
     map.invalidateSize();
   }, 110);
 }
@@ -682,7 +584,8 @@ function closePanel() {
   document.getElementById('region-nav').classList.remove('panel-open');
   document.querySelectorAll('.rpill').forEach(p => p.classList.remove('active'));
   if (activeLoc) {
-    markerMap[activeLoc.id].setIcon(markerIcon(activeLoc.color, false));
+    const c = ALL_REGIONS[activeLoc.id].color;
+    markerMap[activeLoc.id].marker.setIcon(markerIcon(c, false));
     activeLoc = null;
   }
   resetAllRegions();
@@ -698,48 +601,34 @@ function buildCarousel(photos, name) {
   const track = document.getElementById('car-track');
   const dots  = document.getElementById('car-dots');
   track.innerHTML = ''; dots.innerHTML = '';
-
-  photos.forEach((photo, i) => {
+  photos.forEach((photo,i) => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
-    if (photo) {
-      slide.innerHTML = `<img src="${photo}" alt="${name} photo ${i+1}" loading="lazy">`;
-    } else {
-      slide.innerHTML = `<div class="ph">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="4" y="10" width="40" height="28" rx="3" stroke="white" stroke-width="2"/>
-          <circle cx="17" cy="22" r="4" stroke="white" stroke-width="2"/>
-          <path d="M4 32L14 22L21 29L29 21L44 32" stroke="white" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-        <span>Photo ${i+1} — Add your image here</span>
-      </div>`;
-    }
+    slide.innerHTML = photo
+      ? `<img src="${photo}" alt="${name} photo ${i+1}" loading="lazy">`
+      : `<div class="ph"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="10" width="40" height="28" rx="3" stroke="white" stroke-width="2"/><circle cx="17" cy="22" r="4" stroke="white" stroke-width="2"/><path d="M4 32L14 22L21 29L29 21L44 32" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg><span>Photo ${i+1} — Add your image here</span></div>`;
     track.appendChild(slide);
-
     const dot = document.createElement('div');
-    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.className = 'dot'+(i===0?' active':'');
     dot.onclick = () => goSlide(i);
     dots.appendChild(dot);
   });
-
   refreshCarousel();
 }
-
 function refreshCarousel() {
   if (!activeLoc) return;
-  document.getElementById('car-track').style.transform = `translateX(-${curSlide * 100}%)`;
-  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === curSlide));
-  document.getElementById('car-count').textContent = `${curSlide + 1} / ${activeLoc.photos.length}`;
+  document.getElementById('car-track').style.transform = `translateX(-${curSlide*100}%)`;
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active',i===curSlide));
+  document.getElementById('car-count').textContent = `${curSlide+1} / ${activeLoc.photos.length}`;
 }
-
-function nextSlide() { if (activeLoc) { curSlide = (curSlide + 1) % activeLoc.photos.length; refreshCarousel(); } }
-function prevSlide() { if (activeLoc) { curSlide = (curSlide - 1 + activeLoc.photos.length) % activeLoc.photos.length; refreshCarousel(); } }
-function goSlide(i)  { curSlide = i; refreshCarousel(); }
+function nextSlide() { if(activeLoc){ curSlide=(curSlide+1)%activeLoc.photos.length; refreshCarousel(); } }
+function prevSlide() { if(activeLoc){ curSlide=(curSlide-1+activeLoc.photos.length)%activeLoc.photos.length; refreshCarousel(); } }
+function goSlide(i)  { curSlide=i; refreshCarousel(); }
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape')     closePanel();
-  if (e.key === 'ArrowRight') nextSlide();
-  if (e.key === 'ArrowLeft')  prevSlide();
+  if(e.key==='Escape')     closePanel();
+  if(e.key==='ArrowRight') nextSlide();
+  if(e.key==='ArrowLeft')  prevSlide();
 });
 
 </script>
