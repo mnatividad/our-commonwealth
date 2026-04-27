@@ -302,17 +302,74 @@ const NAME_TO_REGION = {
 
 // Helper: normalize feature name for lookup
 // "Fairfax County" → "Fairfax"  |  "Roanoke city" → "Roanoke city"
-function normalizeName(raw) {
-  if (!raw) return "";
-  // Strip " County" suffix (case-insensitive), keep " city" suffix
-  return raw.replace(/\s+County$/i, "").trim();
-}
+// FIPS fallback — used when name matching fails for independent cities.
+// Virginia independent city FIPS codes are fixed and well-documented.
+const FIPS_TO_REGION = {
+  // Hampton Roads independent cities
+  "51550": "hampton-roads", // Chesapeake
+  "51620": "hampton-roads", // Franklin
+  "51650": "hampton-roads", // Hampton
+  "51700": "hampton-roads", // Newport News
+  "51710": "hampton-roads", // Norfolk
+  "51735": "hampton-roads", // Poquoson
+  "51740": "hampton-roads", // Portsmouth
+  "51800": "hampton-roads", // Suffolk
+  "51810": "hampton-roads", // Virginia Beach
+  "51830": "hampton-roads", // Williamsburg
+  // SW Virginia independent cities
+  "51520": "sw-virginia",   // Bristol
+  "51640": "sw-virginia",   // Galax
+  "51720": "sw-virginia",   // Norton
+  "51750": "sw-virginia",   // Radford
+  // Virginia Mountains independent cities
+  "51580": "virginia-mountains", // Covington
+  "51770": "virginia-mountains", // Roanoke city
+  "51775": "virginia-mountains", // Salem
+  // Shenandoah independent cities
+  "51530": "shenandoah",    // Buena Vista
+  "51660": "shenandoah",    // Harrisonburg
+  "51678": "shenandoah",    // Lexington
+  "51790": "shenandoah",    // Staunton
+  "51820": "shenandoah",    // Waynesboro
+  "51840": "shenandoah",    // Winchester
+  // Southern Virginia independent cities
+  "51590": "southern-virginia", // Danville
+  "51595": "southern-virginia", // Emporia
+  "51690": "southern-virginia", // Martinsville
+  // Central Virginia independent cities
+  "51515": "central-virginia", // Bedford city
+  "51540": "central-virginia", // Charlottesville
+  "51570": "central-virginia", // Colonial Heights
+  "51670": "central-virginia", // Hopewell
+  "51680": "central-virginia", // Lynchburg
+  "51730": "central-virginia", // Petersburg
+  "51760": "central-virginia", // Richmond city
+  // Northern Virginia independent cities
+  "51510": "nova",          // Alexandria
+  "51600": "nova",          // Fairfax city
+  "51610": "nova",          // Falls Church
+  "51630": "nova",          // Fredericksburg
+  "51683": "nova",          // Manassas
+  "51685": "nova",          // Manassas Park
+};
 
 function getRegionId(feature) {
   const raw = (feature.properties && feature.properties.name) || "";
-  const norm = normalizeName(raw);
-  // Try normalized name first, then raw
-  return NAME_TO_REGION[norm] || NAME_TO_REGION[raw] || null;
+
+  // Name-based matching (works for counties)
+  if (raw) {
+    if (NAME_TO_REGION[raw]) return NAME_TO_REGION[raw];
+    const noCounty = raw.replace(/\s+County$/i, "").trim();
+    if (NAME_TO_REGION[noCounty]) return NAME_TO_REGION[noCounty];
+    const normCity = raw.replace(/\s+City$/, " city");
+    if (NAME_TO_REGION[normCity]) return NAME_TO_REGION[normCity];
+  }
+
+  // FIPS fallback — catches independent cities regardless of name format
+  const fips = String(feature.id).padStart(5, "0");
+  if (FIPS_TO_REGION[fips]) return FIPS_TO_REGION[fips];
+
+  return null;
 }
 
 
@@ -349,7 +406,7 @@ const LOCATIONS = [
     id:"sw-virginia", name:"Southwest Virginia",
     regionTag:"Blue Ridge Highlands & Heart of Appalachia",
     lat:36.90, lng:-82.30, industry:"Energy & Transition",
-    photos:["Mt_Rogers.jpeg"],
+    photos:["Mt_Rogers.jpeg", null, null],
     paragraph1:"Southwest Virginia is the Appalachian heartland of Virginia. Coal mining is a prominent industry here, generating $1.7B in annual GDP. The region's access to nature generates $1.4B in annual tourist spend for hiking, cycling, camping, and fishing.",
     paragraph2:"Virginia is exploring the deployment of small-modular nuclear reactors in Southwest Virginia to meet growing energy demands and reduce dependence on coal, potentially anchoring the region's next economic chapter.",
     spotlight:{
@@ -364,7 +421,7 @@ const LOCATIONS = [
     lat:36.85, lng:-76.29, industry:"Defense & Maritime",
     photos:["Surf_1.jpeg","Surf_2.jpeg",null],
     paragraph1:"Hampton Roads is integral to American naval power. Home to Naval Station Norfolk, the world's largest naval base, and Newport News Shipbuilding, the region builds, repairs, and deploys the warships that project U.S. power globally. The Port of Virginia ranks among the East Coast's busiest commercial ports, and the defense ecosystem supports hundreds of thousands of civilian jobs across Virginia Beach, Chesapeake, Hampton, and Norfolk.",
-    paragraph2:,
+    paragraph2:"",
     spotlight:{
       name:"Atlantic Park Surf",
       desc:"Virginia Beach is home to Atlantic Park Surf, a mixed-use development that includes one of two surfing wave pools on the East Coast, alongside retail stores, restaurants, and residential apartments.",
@@ -377,7 +434,7 @@ const LOCATIONS = [
     lat:38.65, lng:-78.85, industry:"Agriculture & Tourism",
     photos:["Shenandoah.jpeg","Rockingham.jpeg",null],
     paragraph1:"Sandwiched between the Blue Ridge and the Allegheny mountains, the Shenandoah Valley has been Virginia's agricultural backbone since colonial times. Today it produces apples, poultry, dairy, and an increasingly acclaimed wine industry — Virginia now has over 300 wineries, with many concentrated along the Shenandoah Valley Wine Trail. The region's natural assets — Shenandoah National Park, the Appalachian Trail, Luray Caverns, and the Skyline Drive — drive a growing outdoor tourism economy.",
-    paragraph2:,
+    paragraph2:"",
     spotlight:{
       name:"Buc-ee's",
       desc:"The iconic Texas-born travel center has planted its flag in the Shenandoah Valley, bringing its famously massive rest stops, fresh food, and devoted following to I-81 travelers.",
@@ -391,6 +448,7 @@ const LOCATIONS = [
     photos:["Rotunda.jpeg","Hazy.jpeg",null],
     paragraph1:"The Virginia Piedmont is rolling foothills country stretching from the Blue Ridge Mountains toward Richmond, dotted with working farms, historic estates, and what has quietly become one of America's most celebrated wine destinations. Virginia now has over 300 wineries contributing $1.7 billion in direct economic impact and 10,000 full-time jobs statewide. Anchoring the region, UVA generates $11.9 billion in total statewide economic impact and supports tens of thousands of jobs.",
     paragraph2:"The region is also where the Civil War effectively ended, Appomattox Court House, where Robert E. Lee surrendered to Ulysses S. Grant in April 1865, sits just east of Lynchburg, a quiet historic site that belies its enormous significance.",
+    spotlight:{
       name: "Early Mountain Vineyard",
       desc:"One of the Piedmont's premier wineries, Early Mountain is known for its award-winning Petit Manseng, a benchmark for Virginia's emerging wine identity.",
       url:"#"
